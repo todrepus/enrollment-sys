@@ -1,7 +1,7 @@
 package com.todrepus.enrollmentsys.config.auth.dto;
 
-import com.todrepus.enrollmentsys.domain.user.Role;
-import com.todrepus.enrollmentsys.domain.user.User;
+import com.todrepus.enrollmentsys.domain.member.Role;
+import com.todrepus.enrollmentsys.domain.member.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -39,12 +39,12 @@ public class OAuthAttributes {
                 .build();
     }
 
-    public User toEntity(){
-        return User.builder()
+    public Member toEntity(){
+        return Member.builder()
                 .name(name)
                 .email(email)
                 .picture(picture)
-                .role(Role.GUEST)
+                .role(Role.USER)
                 .build();
     }
 }
