@@ -33,7 +33,7 @@ class MemberRepositoryTest {
                 .name("김아무개")
                 .email("example@naver.com")
                 .role(Role.STUDENT)
-                .picture("picture").build();
+                .build();
 
         memberRepository.save(member);
 
@@ -53,13 +53,13 @@ class MemberRepositoryTest {
                 .name("김학생")
                 .email("example@naver.com")
                 .role(Role.STUDENT)
-                .picture("picture").build();
+                .build();
 
         Member member2 = Member.builder()
                 .name("김교수")
                 .email("professor@naver.com")
                 .role(Role.PROFESSOR)
-                .picture("picture").build();
+                .build();
 
         memberRepository.save(member);
         memberRepository.save(member2);

@@ -18,7 +18,6 @@ import org.springframework.security.web.authentication.RememberMeServices;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig{
-    private final CustomOAuth2UserService customOAuth2UserService;
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.debug("일단 스프링 시큐리티 모두 통과하도록 하였음.");

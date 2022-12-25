@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Getter
@@ -20,33 +22,34 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String userId;
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String email;
 
-    @Column
-    private String picture;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
     @OneToMany(mappedBy="id")
-    private List<Course> courseList = new ArrayList<>();
+    private Set<Course> courseSet = new HashSet<>();
 
     @Builder
-    public Member(String name, String email, String picture, Role role){
+    public Member(String userId, String name, String email, Role role){
+        this.userId = userId;
         this.name = name;
         this.email = email;
-        this.picture = picture;
         this.role = role;
     }
 
-    public Member update(String name, String picture){
-        this.name= name;
-        this.picture = picture;
-
+    public Member update(String name, String email, Role role, Set<Course> courseSet){
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.courseSet = courseSet;
         return this;
     }
 

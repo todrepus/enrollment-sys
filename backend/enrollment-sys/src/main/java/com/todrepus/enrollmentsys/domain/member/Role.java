@@ -1,7 +1,14 @@
 package com.todrepus.enrollmentsys.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @RequiredArgsConstructor
@@ -13,4 +20,12 @@ public enum Role {
 
     private final String key;
     private final String title;
+    private static final Map<String, Role> ROLE_MAP = Stream.of(values())
+            .collect(Collectors.toMap(Role::getTitle, Function.identity()));
+
+    @JsonCreator
+    public static Role resolve(String title){
+        return Optional.ofNullable(ROLE_MAP.get(title))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid value"));
+    }
 }

@@ -27,7 +27,7 @@ class CourseTest {
                 .name("김교수")
                 .email("example@email.com")
                 .role(Role.PROFESSOR)
-                .picture("NO PICTURE").build();
+                .build();
         memberRepository.save(member);
     }
     @Test
