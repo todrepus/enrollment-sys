@@ -85,8 +85,8 @@ class MemberRepositoryTest {
         //courseList가 courseId에 잘 매핑되는지 확인
         //course와 foundCourse가 같은 값으로 표현되는지 확인
         Member foundProfessor = memberRepository.findById(member2.getId()).get();
-        Assertions.assertThat(foundProfessor.getCourseList()).contains(course);
-        Assertions.assertThat(foundProfessor.getCourseList()).contains(foundCourse);
+        Assertions.assertThat(foundProfessor.getCourseSet()).contains(course);
+        Assertions.assertThat(foundProfessor.getCourseSet()).contains(foundCourse);
     }
 
 }

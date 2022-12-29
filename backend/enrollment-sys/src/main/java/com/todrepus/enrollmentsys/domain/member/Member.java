@@ -54,9 +54,9 @@ public class Member extends BaseTimeEntity {
     }
 
     public boolean addCourse(Course course){
-        if (courseList.contains(course))
+        if (courseSet.contains(course))
             return false;
-        courseList.add(course);
+        courseSet.add(course);
         return true;
     }
 
