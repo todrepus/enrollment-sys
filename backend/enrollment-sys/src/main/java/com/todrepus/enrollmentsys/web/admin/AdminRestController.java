@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @RestController
 public class AdminRestController {
     private final MemberRepository memberRepository;

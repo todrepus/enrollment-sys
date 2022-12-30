@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ErrorController {
     @GetMapping("/error")
-    public String redirectRoot(){
+    public String redirectRoot() {
+        log.debug("/error");
         return "index.html";
     }
 
