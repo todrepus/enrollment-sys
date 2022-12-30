@@ -1,6 +1,7 @@
 package com.todrepus.enrollmentsys.domain.member;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,5 +28,10 @@ public enum Role {
     public static Role resolve(String title){
         return Optional.ofNullable(ROLE_MAP.get(title))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid value"));
+    }
+
+    @JsonValue
+    public String toTitle(){
+        return title;
     }
 }

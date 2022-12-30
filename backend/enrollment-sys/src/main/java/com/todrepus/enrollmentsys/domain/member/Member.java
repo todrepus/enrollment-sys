@@ -13,6 +13,7 @@ import java.util.Set;
 
 
 @Getter
+@ToString
 @NoArgsConstructor
 @Entity
 public class Member extends BaseTimeEntity {
@@ -27,7 +28,7 @@ public class Member extends BaseTimeEntity {
     private String name;
 
     @Column(nullable = false)
-    private String email;
+    private String password;
 
 
     @Enumerated(EnumType.STRING)
@@ -38,16 +39,16 @@ public class Member extends BaseTimeEntity {
     private Set<Course> courseSet = new HashSet<>();
 
     @Builder
-    public Member(String userId, String name, String email, Role role){
+    public Member(String userId, String name, String password, Role role){
         this.userId = userId;
         this.name = name;
-        this.email = email;
+        this.password = password;
         this.role = role;
     }
 
-    public Member update(String name, String email, Role role, Set<Course> courseSet){
+    public Member update(String name, String password, Role role, Set<Course> courseSet){
         this.name = name;
-        this.email = email;
+        this.password = password;
         this.role = role;
         this.courseSet = courseSet;
         return this;

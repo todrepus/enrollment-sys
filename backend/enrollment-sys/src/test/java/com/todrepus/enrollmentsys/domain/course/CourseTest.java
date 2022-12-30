@@ -25,7 +25,7 @@ class CourseTest {
     public void setup(){
         Member member = Member.builder()
                 .name("김교수")
-                .email("example@email.com")
+                .password("1234567")
                 .role(Role.PROFESSOR)
                 .build();
         memberRepository.save(member);
@@ -51,5 +51,6 @@ class CourseTest {
         Course foundCourse = courseRepository.findAll().get(0);
         Assertions.assertThat(foundCourse.getCourseDateList().toString()).isEqualTo("[MON 14:40~16:0, WED 17:0~19:30]");
     }
+
 
 }

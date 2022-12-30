@@ -12,7 +12,7 @@ public class JoinRequestDTO {
     @NotBlank
     private String name;
     @NotBlank
-    private String email;
+    private String password;
     @NotNull
     private Role role;
 

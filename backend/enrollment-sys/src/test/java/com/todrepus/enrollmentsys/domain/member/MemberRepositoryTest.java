@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -30,15 +31,16 @@ class MemberRepositoryTest {
     public void Member_저장() throws Exception {
         //given
         Member member = Member.builder()
+                .userId("170108")
                 .name("김아무개")
-                .email("example@naver.com")
+                .password("example@naver.com")
                 .role(Role.STUDENT)
                 .build();
 
         memberRepository.save(member);
 
         //when
-        Optional<Member> optUser = memberRepository.findByEmail("example@naver.com");
+        Optional<Member> optUser = memberRepository.findByUserId("170108");
 
         //then
         Assertions.assertThat(memberRepository.findAll().size()).isEqualTo(1);
@@ -51,13 +53,13 @@ class MemberRepositoryTest {
     public void CourseList_살펴보기_and_강의중복등록_방지확인() {
         Member member = Member.builder()
                 .name("김학생")
-                .email("example@naver.com")
+                .password("123456")
                 .role(Role.STUDENT)
                 .build();
 
         Member member2 = Member.builder()
                 .name("김교수")
-                .email("professor@naver.com")
+                .password("123456")
                 .role(Role.PROFESSOR)
                 .build();
 
@@ -89,4 +91,23 @@ class MemberRepositoryTest {
         Assertions.assertThat(foundProfessor.getCourseSet()).contains(foundCourse);
     }
 
+    @Test
+    public void 회원_업데이트_테스트(){
+        //given
+        Member member = Member.builder()
+                .userId("170108")
+                .name("김아무개")
+                .password("123456")
+                .role(Role.STUDENT)
+                .build();
+
+        memberRepository.save(member);
+
+        //when
+        member.update("새로운이름", member.getPassword(), member.getRole(), member.getCourseSet());
+
+        //then
+        Member user = memberRepository.findByUserId(member.getUserId()).orElseThrow(()-> new NoSuchElementException("회원을 찾지 못했습니다."));
+        Assertions.assertThat(user.getName()).isEqualTo("새로운이름");
+    }
 }

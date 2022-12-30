@@ -26,7 +26,8 @@ public class RestResponseDTO {
 
     public void addParam(String key, Object param){
         Object prevParam = context.put(key, param);
-        log.debug("[duplicated] key: {}, prevParam: {}, nowParam: {}", key, prevParam, param);
+        if (prevParam != null)
+            log.debug("[duplicated] key: {}, prevParam: {}, nowParam: {}", key, prevParam, param);
     }
 
 

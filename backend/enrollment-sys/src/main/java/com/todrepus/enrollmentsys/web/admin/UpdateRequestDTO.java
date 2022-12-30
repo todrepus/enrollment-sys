@@ -13,7 +13,7 @@ public class UpdateRequestDTO {
     @NotEmpty
     private String name;
     @NotEmpty
-    private String email;
+    private String password;
     @NotNull
     private Role role;
     @NotNull

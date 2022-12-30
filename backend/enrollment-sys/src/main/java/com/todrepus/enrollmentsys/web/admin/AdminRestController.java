@@ -9,6 +9,7 @@ import com.todrepus.enrollmentsys.domain.member.Role;
 import com.todrepus.enrollmentsys.web.RestResponseDTO;
 import com.todrepus.enrollmentsys.web.RestState;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.sql.Update;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @RequestMapping("/api/admin")
 @RestController
 public class AdminRestController {
@@ -44,7 +46,7 @@ public class AdminRestController {
 
     @SuppressWarnings("현재 모든 멤버를 조회하도록 구현됨. -> Querydsl로 일부만 받도록 수정해야함.")
     @GetMapping("/members")
-    public RestResponseDTO getMembers(@RequestParam Integer page) {
+    public RestResponseDTO getMembers(@RequestParam(required = false) Integer page) {
         if (page == null || page <= 0)
             page = 1;
 
@@ -52,9 +54,9 @@ public class AdminRestController {
         int size = members.size();
         int maxPage = Math.ceilDiv(size, AdminPageConst.ELEMENT_NUM);
         int start = (page - 1) * AdminPageConst.ELEMENT_NUM;
-        List<Member> membersOnPage = members.stream().skip(start)
+        List<MemberResponseDTO> membersOnPage = members.stream().skip(start)
                 .limit(AdminPageConst.ELEMENT_NUM)
-                .toList();
+                .map(MemberResponseDTO::new).toList();
 
         RestResponseDTO response = RestResponseDTO.builder()
                 .state(RestState.OK)
@@ -66,8 +68,9 @@ public class AdminRestController {
     }
 
     @PostMapping("/members/add")
-    public RestResponseDTO addMember(@Validated JoinRequestDTO joinRequestDTO, BindingResult bindingResult,
+    public RestResponseDTO addMember(@Validated @RequestBody JoinRequestDTO joinRequestDTO, BindingResult bindingResult,
                                      HttpServletResponse httpServletResponse) {
+        log.debug("{}",joinRequestDTO);
         if (bindingResult.hasErrors()) {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return RestResponseDTO.builder()
@@ -77,18 +80,19 @@ public class AdminRestController {
         String userId = joinRequestDTO.getUserId();
         String name = joinRequestDTO.getName();
         ;
-        String email = joinRequestDTO.getEmail();
+        String password = joinRequestDTO.getPassword();
         ;
         Role role = joinRequestDTO.getRole();
 
         Member newMember = Member.builder()
                 .userId(userId)
                 .name(name)
-                .email(email)
+                .password(password)
                 .role(role).build();
 
         Member result = memberService.joinMember(newMember);
-
+        log.debug("newMember {}", newMember);
+        log.debug("result {}", result);
         if (result == null) {
             httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return RestResponseDTO.builder()
@@ -96,17 +100,22 @@ public class AdminRestController {
                     .message("가입에 실패하였습니다.")
                     .build();
         } else {
-            return RestResponseDTO.builder()
-                    .state(RestState.OK)
-                    .message("가입에 성공하였습니다.")
-                    .build();
+            RestResponseDTO response = RestResponseDTO.builder()
+                                        .state(RestState.OK)
+                                        .message("가입에 성공하였습니다.")
+                                        .build();
+
+            MemberResponseDTO memberResponseDTO = new MemberResponseDTO(result);
+            response.addParam("data", memberResponseDTO);
+            return response;
         }
     }
 
     @SuppressWarnings("courseIdList부분을 한번에 조회하도록 고쳐봐야함.")
     @PostMapping("/members/{id}/update")
-    public RestResponseDTO updateMember(@PathVariable Long id, @Validated UpdateRequestDTO updateRequestDTO,
+    public RestResponseDTO updateMember(@PathVariable Long id, @Validated @RequestBody UpdateRequestDTO updateRequestDTO,
                                         BindingResult bindingResult, HttpServletResponse httpServletResponse) {
+        log.debug("{}", updateRequestDTO);
         if (bindingResult.hasErrors()) {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return RestResponseDTO.builder()
@@ -118,7 +127,7 @@ public class AdminRestController {
                 () -> new NoSuchElementException("해당 id를 가진 member를 찾지 못했습니다"));
 
         String name = updateRequestDTO.getName();
-        String email = updateRequestDTO.getEmail();
+        String password = updateRequestDTO.getPassword();
         Role role = updateRequestDTO.getRole();
         List<Long> courseIdList = updateRequestDTO.getCourseIdList();
         Set<Course> courseSet = courseIdList.stream().map(
@@ -126,7 +135,8 @@ public class AdminRestController {
                         .orElseThrow(() -> new NoSuchElementException("해당 id를 가진 course를 찾지 못했습니다")))
                         .collect(Collectors.toSet());
 
-        member.update(name, email, role, courseSet);
+        Member updatedMember = member.update(name, password, role, courseSet);
+        log.debug("updateMember : {}", updatedMember);
 
         return RestResponseDTO.builder()
                 .state(RestState.OK)
@@ -134,6 +144,19 @@ public class AdminRestController {
                 .build();
     }
 
+    @GetMapping("/members/{id}")
+    public RestResponseDTO getMember(@PathVariable Long id){
+        Member foundMember = memberRepository.findById(id).orElseThrow(
+                ()-> new NoSuchElementException("해당 id를 가진 member를 찾지 못했습니다.")
+        );
+
+        RestResponseDTO responseDTO = RestResponseDTO.builder()
+                .state(RestState.OK)
+                .message("조회")
+                .build();
+        responseDTO.addParam("member", foundMember);
+        return responseDTO;
+    }
 
     /*
     강의 수정 및 관리
