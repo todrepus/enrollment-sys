@@ -20,7 +20,9 @@ public class Course extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="courseId")
     Long id;
-
+    
+    @Column(nullable = false)
+    String name; // 강의명
     @Column(nullable = false)
     String room; // 강의실
 

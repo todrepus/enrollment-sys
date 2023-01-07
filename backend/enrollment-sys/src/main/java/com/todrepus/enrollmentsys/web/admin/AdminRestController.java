@@ -2,6 +2,7 @@ package com.todrepus.enrollmentsys.web.admin;
 
 import com.todrepus.enrollmentsys.domain.course.Course;
 import com.todrepus.enrollmentsys.domain.course.CourseRepository;
+import com.todrepus.enrollmentsys.domain.course.CourseService;
 import com.todrepus.enrollmentsys.domain.member.Member;
 import com.todrepus.enrollmentsys.domain.member.MemberRepository;
 import com.todrepus.enrollmentsys.domain.member.MemberService;
@@ -32,6 +33,7 @@ public class AdminRestController {
     private final MemberRepository memberRepository;
     private final CourseRepository courseRepository;
     private final MemberService memberService;
+    private final CourseService courseService;
 
     /*
     멤버 수정 및 관리
@@ -157,6 +159,19 @@ public class AdminRestController {
         responseDTO.addParam("member", foundMember);
         return responseDTO;
     }
+
+    /// 회원검색어 추천
+    @GetMapping("/recommend/courses")
+    public RestResponseDTO recommendCourseList(@RequestParam String content){
+        List<Course> courseList =  courseService.findCoursesStartWith(content);
+        RestResponseDTO responseDTO = RestResponseDTO.builder()
+                .state(RestState.OK)
+                .message("강의추천")
+                .build();
+        responseDTO.addParam("courseList", courseList);
+        return responseDTO;
+    }
+
 
     /*
     강의 수정 및 관리
