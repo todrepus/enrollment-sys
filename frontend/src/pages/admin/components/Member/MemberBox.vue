@@ -30,26 +30,31 @@
       </tr>
     </thead>
     <tbody>
-      <MemberElementVue :key="i" :member="data" :idx="i" :editVisible="setEditModalVisible" :editInit="setNowEditMember"
-        v-for="(data, i) in elements">
-      </MemberElementVue>
+      <MemberElementVue :key="i" :member="data" @edit="editModalVisible = true; setNowEditMember(i)"
+        v-for="(data, i) in elements"></MemberElementVue>
     </tbody>
   </table>
 
   <!-- 멤버 추가 모달 -->
-  <MemberModal v-bind:visible="setAddModalVisible" v-bind:addMember="addMember" v-if="addModalVisible"></MemberModal>
+  <MemberModal 
+  @add="(member)=>{addModalVisible=false; addMember(member);}" 
+  @close="addModalVisible=false;"
+    v-if="addModalVisible"></MemberModal>
   <!-- ================ -->
   <!-- 멤버 수정 모달 -->
-  <MemberEditModal v-bind:visible="setEditModalVisible" v-bind:editMember="editMember" v-bind:oldMember="nowEditMember"
+  <MemberEditModal :oldMember="nowEditMember"
+  @close="editModalVisible = false;"
+  @edit="editMember"
     v-if="editModalVisible"></MemberEditModal>
   <!-- ================ -->
 
 </template>
-  
+
 <script>
 import MemberElementVue from './MemberElement.vue';
 import MemberModal from './MemberModal.vue';
 import MemberEditModal from './MemberEditModal.vue';
+import { Member } from './Member';
 
 export default {
   name: 'MemberBox',
@@ -61,13 +66,11 @@ export default {
   },
   methods: {
     test() { alert('test msg'); },
-    addMemberView(id, userId, name, password, role, courseList) {
-      this.elements.push(
-        { id: id, userId: userId, name: name, password: password, role: role, courseList: courseList}
-      );
+    addMemberView(member) {
+      this.elements.push(member);
     },
-    addMember(userId, name, password) {
-      alert(`${userId} | ${name} | ${password}`);
+    addMember(member) {
+      alert(`${member.userId} | ${member.name} | ${member.password} | ${member.role}`);
       //fetch api addMember......
       //////////////////
       fetch('/api/admin/members/add', {
@@ -76,10 +79,10 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: userId,
-          name: name,
-          password: password,
-          role: "학생"
+          userId: member.userId,
+          name: member.name,
+          password: member.password,
+          role: member.role
         })
       }).then((response) => {
         if (response.ok) {
@@ -89,16 +92,20 @@ export default {
         }
       }).then((data) => {
         /// if success //////
-        const member = data.context.data;
-        console.log(member);
+        const memberJoin = data.context.data;
+        console.log(memberJoin);
         this.addModalVisible = false;
-        this.addMemberView(member.id, member.userId, member.name, member.password, member.role, member.courseList);
+        this.addMemberView(memberJoin);
       })
     },
-    editMember(idx, member) {
+    editMember(member) {
+      // hide editModal
+      this.editModalVisible = false;
+
+      const idx = member.idx;
       alert(`${idx} | ${member.id} | ${member.userId} | ${member.name} | ${member.password}`);
-      let courseIdList = [];
       // 강의 id 리스트로 변환
+      let courseIdList = [];
       member.courseList.forEach(course => {
         courseIdList.push(course.content.id);
       });
@@ -136,18 +143,17 @@ export default {
       this.nowEditMember.idx = key;
     },
     setAddModalVisible(state) { this.addModalVisible = state; },
-    setEditModalVisible(state) { this.editModalVisible = state; },
 
   },
   data() {
     return {
       elements: [{
-        id: 0, name: "길동이", userId: "12224560", password: "12345678", role: "학생", courseList:[]
+        id: 0, name: "길동이", userId: "12224560", password: "12345678", role: "학생", courseList: []
       }],
       addModalVisible: false,
       editModalVisible: false,
       nowEditMember: {
-        idx: -1, id: -1, userId: "", 
+        idx: -1, id: -1, userId: "",
         courseList: [], name: "", password: "", role: "학생"
       },
     };
@@ -156,7 +162,7 @@ export default {
     fetch('/api/admin/members', {
       method: 'GET',
       headers: {
-          'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
       },
     }).then((response) => {
       if (response.ok)
@@ -168,13 +174,13 @@ export default {
 
       this.elements = [];
       members.forEach(member => {
-        let courseList = member.courseList.map(course => {return {name : course.name, content: course};});
-        this.addMemberView(member.id, member.userId, member.name, member.password, member.role, courseList);
+        let courseList = member.courseList.map(course => { return { name: course.name, content: course }; });
+        this.addMemberView(new Member(member.id, member.userId, member.name, member.password, member.role, courseList));
       });
     })
   }
 }
-</script>
-  
 
-  
+</script>
+
+

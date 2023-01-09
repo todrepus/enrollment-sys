@@ -5,7 +5,7 @@
     <td>{{ member.userId }}</td>
     <td>{{ member.name }}</td>
     <td class="d-flex justify-content-end mr-5">
-        <button type="button" class="btn btn-primary" @click="editVisible(true); editInit(idx)">수정하기</button>
+        <button type="button" class="btn btn-primary" @click="$emit('edit')">수정하기</button>
         <button type="button" class="btn btn-primary mx-3">삭제하기</button>
     </td>
     </tr>
@@ -32,9 +32,6 @@ export default{
                 };
             }
         },
-        editVisible: Function,
-        editInit: Function,
-        idx: Number,
     }
 
 }

@@ -51,7 +51,10 @@ export default {
         }
     },
     props: {
-        recommendGET : Function,
+        recommendGET : {
+            type: Function,
+            required: true
+        },
         oldSelected: Object,
     },
 

@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">수정하기</h5>
-                    <button type="button" class="btn-close" aria-label="Close" @click="visible(false)">
+                    <button type="button" class="btn-close" aria-label="Close" @click="$emit('close')">
                     </button>
                 </div>
                 <div class="modal-body">
@@ -41,8 +41,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="editMember(member.idx, member)">수정하기</button>
-                    <button type="button" class="btn btn-secondary" @click="visible(false)">Close</button>
+                    <button type="button" class="btn btn-primary" @click="$emit('edit', member)">수정하기</button>
+                    <button type="button" class="btn btn-secondary" @click="$emit('close')">Close</button>
                 </div>
             </div>
         </div>
@@ -83,8 +83,6 @@ export default {
         }
     },
     props: {
-        visible: Function,
-        editMember: Function,
         oldMember: {
             type: Object,
             default() {
