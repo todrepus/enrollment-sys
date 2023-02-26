@@ -38,3 +38,7 @@ out/
 
 ### oauth properties ###
 application-oauth.properties
+
+### db properties ###
+application-database.properties
+
