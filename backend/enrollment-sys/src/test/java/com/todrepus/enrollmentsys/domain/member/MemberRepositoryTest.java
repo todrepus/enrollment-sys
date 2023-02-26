@@ -1,7 +1,6 @@
 package com.todrepus.enrollmentsys.domain.member;
 
 import com.todrepus.enrollmentsys.domain.course.Course;
-import com.todrepus.enrollmentsys.domain.course.CourseDate;
 import com.todrepus.enrollmentsys.domain.course.CourseRepository;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;

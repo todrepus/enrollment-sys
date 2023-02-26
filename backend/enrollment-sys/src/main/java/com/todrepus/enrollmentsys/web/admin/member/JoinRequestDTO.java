@@ -1,4 +1,4 @@
-package com.todrepus.enrollmentsys.web.admin;
+package com.todrepus.enrollmentsys.web.admin.member;
 
 import com.todrepus.enrollmentsys.domain.member.Role;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +13,9 @@ public class JoinRequestDTO {
     private String name;
     @NotBlank
     private String password;
+
+    @NotBlank
+    private String phoneNumber;
     @NotNull
     private Role role;
 

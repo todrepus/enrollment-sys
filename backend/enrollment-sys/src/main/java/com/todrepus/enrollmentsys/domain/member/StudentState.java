@@ -13,19 +13,19 @@ import java.util.stream.Stream;
 
 @Getter
 @RequiredArgsConstructor
-public enum Role {
-    STUDENT("STUDENT", "학생"),
-    PROFESSOR("PROFESSOR", "교수"),
-    ADMIN("ADMIN", "관리자");
-
+public enum StudentState {
+    ENROLLED("ENROLLED", "재학"),
+    LEAVE("LEAVE", "휴학"),
+    GRADUATED("GRADUATED", "졸업");
+    
     private final String key;
     private final String title;
-    private static final Map<String, Role> ROLE_MAP = Stream.of(values())
-            .collect(Collectors.toMap(Role::getTitle, Function.identity()));
+    private static final Map<String, StudentState> STUDENT_STATE_MAP = Stream.of(values())
+            .collect(Collectors.toMap(StudentState::getTitle, Function.identity()));
 
     @JsonCreator
-    public static Role resolve(String title){
-        return Optional.ofNullable(ROLE_MAP.get(title))
+    public static StudentState resolve(String title){
+        return Optional.ofNullable(STUDENT_STATE_MAP.get(title))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid value"));
     }
 
