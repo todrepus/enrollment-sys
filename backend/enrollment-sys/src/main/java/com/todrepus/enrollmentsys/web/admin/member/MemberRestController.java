@@ -46,6 +46,7 @@ public class MemberRestController {
                 RestResponseDTO.getSuccessResponse("멤버목록 조회");
         
         response.setData(membersOnPage);
+        response.addParam("nowPage", page);
         response.addParam("maxPage", maxPage);
         return response;
     }
@@ -103,7 +104,7 @@ public class MemberRestController {
         return responseDTO;
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/professors/{userId}")
     public RestResponseDTO<ProfessorResponseDTO> getProfessor(@PathVariable String userId){
         Professor foundProfessor = memberService.findProfessorByUserId(userId);
 

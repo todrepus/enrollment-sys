@@ -44,6 +44,7 @@ public class RoomRestController {
         RestResponseDTO<List<RoomResponseDTO>> responseDTO =
                 RestResponseDTO.getSuccessResponse("강의실 목록 조회");
         responseDTO.setData(roomsOnPage);
+        responseDTO.addParam("nowPage", page);
         responseDTO.addParam("maxPage", maxPage);
         return responseDTO;
     }

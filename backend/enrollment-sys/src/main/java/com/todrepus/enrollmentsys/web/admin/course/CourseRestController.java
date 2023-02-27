@@ -55,6 +55,7 @@ public class CourseRestController {
                 RestResponseDTO.getSuccessResponse("OK");
 
         response.setData(coursesOnPage);
+        response.addParam("nowPage", page);
         response.addParam("maxPage", maxPage);
         return response;
     }
