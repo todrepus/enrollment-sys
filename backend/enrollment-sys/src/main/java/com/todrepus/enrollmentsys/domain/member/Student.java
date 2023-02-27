@@ -35,6 +35,7 @@ public class Student extends Member{
 
     public Student(Member member){
         super(member);
+        this.setRole(Role.STUDENT);
         this.state = StudentState.ENROLLED;
     }
 

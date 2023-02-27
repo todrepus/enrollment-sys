@@ -8,8 +8,10 @@ import com.todrepus.enrollmentsys.domain.room.Room;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
@@ -73,6 +75,13 @@ public class Course{
             return false;
         courseScheduleList.set(idx, courseSchedule);
         return true;
+    }
+
+    public void addSchedule(CourseSchedule schedule){
+        if (this.courseScheduleList == null)
+            this.courseScheduleList = new ArrayList<>();
+        this.getCourseScheduleList().add(schedule);
+        schedule.setCourse(this);
     }
 
 }

@@ -35,11 +35,13 @@ public class CourseSchedule {
 
     @Builder
     public CourseSchedule(Day courseDay, Integer courseHourStart, Integer courseMinStart,
-                          Integer courseHourEnd, Integer courseMinEnd){
+                          Integer courseHourEnd, Integer courseMinEnd, Course course){
         this.courseDay = courseDay;
         this.courseHourStart = courseHourStart;
         this.courseMinStart = courseMinStart;
         this.courseHourEnd = courseHourEnd;
         this.courseMinEnd = courseMinEnd;
+        this.course = course;
     }
+
 }

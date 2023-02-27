@@ -93,7 +93,7 @@ public class CourseRestController {
                             .courseMinEnd(courseScheduleDTO.getCourseMinEnd())
                             .courseMinStart(courseScheduleDTO.getCourseMinStart())
                             .courseHourStart(courseScheduleDTO.getCourseHourStart())
-                            .courseDay(courseScheduleDTO.getCouresDay())
+                            .courseDay(courseScheduleDTO.getCourseDay())
                             .build()
         ).toList();
 
@@ -105,13 +105,12 @@ public class CourseRestController {
                 .department(department)
                 .professor(professor)
                 .build();
-
         courseRepository.save(course);
+
         courseScheduleList.forEach(
                 courseSchedule -> {
-                    courseSchedule.setCourse(course);
+                    course.addSchedule(courseSchedule);
                     courseScheduleRepository.save(courseSchedule);
-                    course.getCourseScheduleList().add(courseSchedule);
                 }
         );
 
@@ -174,7 +173,7 @@ public class CourseRestController {
                                 .courseMinEnd(courseScheduleDTO.getCourseMinEnd())
                                 .courseMinStart(courseScheduleDTO.getCourseMinStart())
                                 .courseHourStart(courseScheduleDTO.getCourseHourStart())
-                                .courseDay(courseScheduleDTO.getCouresDay())
+                                .courseDay(courseScheduleDTO.getCourseDay())
                                 .build();
                         schedule.setId(courseScheduleDTO.getId());
                         return schedule;

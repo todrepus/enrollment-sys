@@ -29,5 +29,6 @@ public class Professor extends Member{
 
     public Professor(Member member){
         super(member);
+        this.setRole(Role.PROFESSOR);
     }
 }
