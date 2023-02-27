@@ -1,4 +1,4 @@
-package com.todrepus.enrollmentsys.web.admin.member;
+package com.todrepus.enrollmentsys.web.admin.member.dto;
 
 import com.todrepus.enrollmentsys.domain.member.Role;
 import jakarta.validation.constraints.NotBlank;

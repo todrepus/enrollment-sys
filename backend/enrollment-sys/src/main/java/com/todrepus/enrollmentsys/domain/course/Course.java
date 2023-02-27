@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity(name="courses")
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "jsonId")
 public class Course{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

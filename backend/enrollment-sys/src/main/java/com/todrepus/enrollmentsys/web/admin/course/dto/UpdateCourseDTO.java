@@ -1,4 +1,4 @@
-package com.todrepus.enrollmentsys.web.admin.course;
+package com.todrepus.enrollmentsys.web.admin.course.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

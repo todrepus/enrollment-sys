@@ -14,7 +14,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity(name="professors")
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "jsonId")
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name="professor_id")
 public class Professor extends Member{

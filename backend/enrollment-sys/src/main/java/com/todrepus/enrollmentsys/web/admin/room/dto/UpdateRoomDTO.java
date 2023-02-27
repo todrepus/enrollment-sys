@@ -1,4 +1,4 @@
-package com.todrepus.enrollmentsys.web.admin.room;
+package com.todrepus.enrollmentsys.web.admin.room.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

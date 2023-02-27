@@ -3,16 +3,17 @@ package com.todrepus.enrollmentsys.web.admin.course;
 import com.todrepus.enrollmentsys.domain.course.*;
 import com.todrepus.enrollmentsys.domain.department.Department;
 import com.todrepus.enrollmentsys.domain.department.DepartmentService;
-import com.todrepus.enrollmentsys.domain.member.Member;
 import com.todrepus.enrollmentsys.domain.member.MemberService;
 import com.todrepus.enrollmentsys.domain.member.Professor;
 import com.todrepus.enrollmentsys.domain.room.Room;
 import com.todrepus.enrollmentsys.domain.room.RoomService;
 import com.todrepus.enrollmentsys.web.RestResponseDTO;
-import com.todrepus.enrollmentsys.web.RestState;
 import com.todrepus.enrollmentsys.web.admin.AdminPageConst;
-import com.todrepus.enrollmentsys.web.admin.member.MemberResponseDTO;
+import com.todrepus.enrollmentsys.web.admin.course.dto.AddCourseDTO;
+import com.todrepus.enrollmentsys.web.admin.course.dto.CourseResponseDTO;
+import com.todrepus.enrollmentsys.web.admin.course.dto.UpdateCourseDTO;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 @RestController
@@ -36,7 +38,7 @@ public class CourseRestController {
     private final CourseScheduleRepository courseScheduleRepository;
 
     @GetMapping("")
-    public RestResponseDTO getCourseList(Integer page){
+    public RestResponseDTO<List<CourseResponseDTO>> getCourseList(@RequestParam(required = false) Integer page){
         if (page == null || page <= 0){
             page = 1;
         }
@@ -49,35 +51,31 @@ public class CourseRestController {
                 .limit(AdminPageConst.ELEMENT_NUM)
                 .map(CourseResponseDTO::new).toList();
 
-        RestResponseDTO response = RestResponseDTO.builder()
-                .state(RestState.OK)
-                .build();
+        RestResponseDTO<List<CourseResponseDTO>> response =
+                RestResponseDTO.getSuccessResponse("OK");
 
-        response.addParam("data", coursesOnPage);
+        response.setData(coursesOnPage);
         response.addParam("maxPage", maxPage);
         return response;
     }
 
     @GetMapping("/{courseId}")
-    public RestResponseDTO getCourse(@PathVariable Long courseId){
+    public RestResponseDTO<CourseResponseDTO> getCourse(@PathVariable Long courseId){
         Course course = courseService.findCourse(courseId);
-        RestResponseDTO responseDTO = RestResponseDTO.builder()
-                .state(RestState.OK)
-                .message("조회")
-                .build();
-        responseDTO.addParam("course", new CourseResponseDTO(course));
+        RestResponseDTO<CourseResponseDTO> responseDTO =
+                RestResponseDTO.getSuccessResponse("강의 조회");
+
+        responseDTO.setData(new CourseResponseDTO(course));
         return responseDTO;
     }
 
     @PostMapping("/add")
-    public RestResponseDTO addCourse(@Validated @RequestBody AddCourseDTO addCourseDTO,
+    public RestResponseDTO<CourseResponseDTO> addCourse(@Validated @RequestBody AddCourseDTO addCourseDTO,
                                      BindingResult bindingResult, HttpServletResponse httpServletResponse){
         log.debug("{}", addCourseDTO);
         if (bindingResult.hasErrors()){
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return RestResponseDTO.builder()
-                    .state(RestState.FAIL)
-                    .build();
+            return RestResponseDTO.getBadRequestResponse("강의 생성 실패");
         }
 
         String name = addCourseDTO.getName();
@@ -116,35 +114,29 @@ public class CourseRestController {
                 }
         );
 
-        RestResponseDTO responseDTO = RestResponseDTO.builder()
-                .message("강의생성")
-                .state(RestState.OK)
-                .build();
-        responseDTO.addParam("course", course);
+        RestResponseDTO<CourseResponseDTO> responseDTO =
+                RestResponseDTO.getSuccessResponse("강의 생성");
+        responseDTO.setData(new CourseResponseDTO(course));
         return responseDTO;
     }
 
     @PostMapping("/{courseId}/delete")
-    public RestResponseDTO deleteCourse(@PathVariable Long courseId){
+    public RestResponseDTO<CourseResponseDTO> deleteCourse(@PathVariable Long courseId){
         Course course = courseService.findCourse(courseId);
         course = courseService.deleteCourse(course);
-        RestResponseDTO responseDTO = RestResponseDTO.builder()
-                .message("강의삭제")
-                .state(RestState.OK)
-                .build();
-        responseDTO.addParam("course", course);
+        RestResponseDTO<CourseResponseDTO> responseDTO =
+                RestResponseDTO.getSuccessResponse("강의 삭제");
+        responseDTO.setData(new CourseResponseDTO(course));
         return responseDTO;
     }
 
     @PostMapping("/{courseId}/update")
-    public RestResponseDTO updateCourse(@PathVariable Long courseId, @Validated @RequestBody UpdateCourseDTO updateCourseDTO,
+    public RestResponseDTO<CourseResponseDTO> updateCourse(@PathVariable Long courseId, @Validated @RequestBody UpdateCourseDTO updateCourseDTO,
                                         BindingResult bindingResult, HttpServletResponse httpServletResponse){
         log.debug("{}", updateCourseDTO);
         if (bindingResult.hasErrors()){
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return RestResponseDTO.builder()
-                    .state(RestState.FAIL)
-                    .build();
+            return RestResponseDTO.getBadRequestResponse("강의 업데이트 실패");
         }
 
         // 강의 찾기
@@ -211,11 +203,9 @@ public class CourseRestController {
         course.setName(name);
         course.setMaxNum(maxNum);
 
-        RestResponseDTO responseDTO = RestResponseDTO.builder()
-                .message("강의업데이트")
-                .state(RestState.OK)
-                .build();
-        responseDTO.addParam("course", new CourseResponseDTO(course));
+        RestResponseDTO<CourseResponseDTO> responseDTO =
+                RestResponseDTO.getSuccessResponse("강의 업데이트 성공");
+        responseDTO.setData(new CourseResponseDTO(course));
         return responseDTO;
     }
 

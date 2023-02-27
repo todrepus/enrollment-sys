@@ -3,17 +3,12 @@ package com.todrepus.enrollmentsys.domain.member;
 import com.todrepus.enrollmentsys.domain.course.Course;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnroll;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnrollRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,11 +34,12 @@ public class MemberService {
         }
     }
 
-    public Member findMember(String userId){
+    public Member findMemberByUserId(String userId){
         return memberRepository.findByUserId(userId).orElseThrow(
                 () -> new NoSuchElementException("해당 userId를 가진 member가 없습니다.")
         );
     }
+
     public Professor findProfessorByUserId(String userId){
         return professorRepository.findByUserId(userId).orElseThrow(
                 () -> new NoSuchElementException("해당 userId를 가진 professor가 없습니다.")
@@ -56,7 +52,7 @@ public class MemberService {
         );
     }
 
-    public Student findStudent(String userId){
+    public Student findStudentByUserId(String userId){
         return studentRepository.findByUserId(userId).orElseThrow(
                 () -> new NoSuchElementException("해당 userId를 가진 student가 없습니다.")
         );
@@ -73,7 +69,7 @@ public class MemberService {
     }
 
     public Student deleteStudent(String userId){
-        Student student = findStudent(userId);
+        Student student = findStudentByUserId(userId);
         for (CourseEnroll courseEnroll : student.getCourseEnrollSet()){
             cancelCourseEnroll(student, courseEnroll);
         }

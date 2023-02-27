@@ -1,4 +1,4 @@
-package com.todrepus.enrollmentsys.web.admin.member;
+package com.todrepus.enrollmentsys.web.admin.member.dto;
 
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnroll;
 import com.todrepus.enrollmentsys.domain.department.Department;
