@@ -11,7 +11,7 @@ import java.util.Map;
 @Slf4j
 @Data
 public class RestResponseDTO<T> {
-    private int stateCode;
+    private int statusCode;
     private String message;
     private T data;
 
@@ -30,28 +30,28 @@ public class RestResponseDTO<T> {
     public static <S> RestResponseDTO<S> getSuccessResponse(String message){
         RestResponseDTO<S> responseDTO = new RestResponseDTO<>();
         responseDTO.setMessage(message);
-        responseDTO.setStateCode(HttpServletResponse.SC_OK);
+        responseDTO.setStatusCode(HttpServletResponse.SC_OK);
         return responseDTO;
     }
 
     public static <S> RestResponseDTO<S> getInternalErrorResponse(String message){
         RestResponseDTO<S> responseDTO = new RestResponseDTO<>();
         responseDTO.setMessage(message);
-        responseDTO.setStateCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        responseDTO.setStatusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return responseDTO;
     }
 
     public static <S> RestResponseDTO<S> getBadRequestResponse(String message){
         RestResponseDTO<S> responseDTO = new RestResponseDTO<>();
         responseDTO.setMessage(message);
-        responseDTO.setStateCode(HttpServletResponse.SC_BAD_REQUEST);
+        responseDTO.setStatusCode(HttpServletResponse.SC_BAD_REQUEST);
         return responseDTO;
     }
 
     public static <S> RestResponseDTO<S> getResponse(String message, int stateCode){
         RestResponseDTO<S> responseDTO = new RestResponseDTO<>();
         responseDTO.setMessage(message);
-        responseDTO.setStateCode(stateCode);
+        responseDTO.setStatusCode(stateCode);
         return responseDTO;
     }
 

@@ -52,7 +52,7 @@ public class CourseRestController {
                 .map(CourseResponseDTO::new).toList();
 
         RestResponseDTO<List<CourseResponseDTO>> response =
-                RestResponseDTO.getSuccessResponse("OK");
+                RestResponseDTO.getSuccessResponse("강의 목록 조회");
 
         response.setData(coursesOnPage);
         response.addParam("nowPage", page);
