@@ -4,7 +4,12 @@ module.exports = defineConfig({
   outputDir: "../backend/enrollment-sys/src/main/resources/static",
   devServer: {
     port: 4545,
-    proxy: "http://localhost:8080"
+    proxy: {
+      '^/api': {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true
+      }
+    }
   },
   pages: {
     home:{
