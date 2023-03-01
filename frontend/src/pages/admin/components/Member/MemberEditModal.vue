@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">수정하기</h5>
-                    <button type="button" class="btn-close" aria-label="Close" @click="$emit('close')">
+                    <button type="button" class="btn-close" aria-label="Close" @click="close">
                     </button>
                 </div>
                 <div class="modal-body">
@@ -29,7 +29,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="" class="form-label">강의리스트</label>
-                        <SearchBoxVue :key="i" v-bind:recommendGET="recommendGET" v-model="member.courseList[i]"
+                        <SearchBoxVue :key="i" :recommendGET="recommendGET" v-model="member.courseList[i]"
                             :old-selected="course" v-for="(course, i) in member.courseList"></SearchBoxVue>
                         <button type="button" class="btn btn-primary mx-3" @click="member.courseList.push({name : '', content : ''})">
                             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor"
@@ -41,8 +41,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="$emit('edit', member)">수정하기</button>
-                    <button type="button" class="btn btn-secondary" @click="$emit('close')">Close</button>
+                    <button type="button" class="btn btn-primary" @click="edit">수정하기</button>
+                    <button type="button" class="btn btn-secondary" @click="close">Close</button>
                 </div>
             </div>
         </div>
@@ -51,19 +51,19 @@
 
 <script>
 import SearchBoxVue from '../SearchBox/SearchBox.vue';
+import * as MuType from '../../store/modules/mutation-types';
+import { useStore } from 'vuex';
+import { ref } from 'vue';
 export default {
     name: 'MemberEditModal',
     components: { SearchBoxVue },
-    data() {
-        return {
-            member: {
-                id: -1,
-                userId: "",
-                name: "",
-                password: "",
-                courseList: [],
-            }
-        }
+    setup() {
+        const store = useStore();
+        let member = ref(Object.assign("{}", store.getters.editMember));
+        const edit = () => store.dispatch(MuType.EDIT_MEMBER, member);
+        const close  = () => store.commit(MuType.CLOSE_EDIT_MODAL);
+
+        return {member, edit, close};
     },
     methods: {
         recommendGET(words) {
@@ -82,22 +82,6 @@ export default {
 
         }
     },
-    props: {
-        oldMember: {
-            type: Object,
-            default() {
-                return {
-                    id: -1,
-                    userId: "",
-                    name: "",
-                    password: "",
-                }
-            }
-        }
-    },
-    mounted() {
-        this.member = Object.assign("{}", this.oldMember);
-    }
 }
 </script>
 

@@ -5,7 +5,7 @@
     <td>{{ member.userId }}</td>
     <td>{{ member.name }}</td>
     <td class="d-flex justify-content-end mr-5">
-        <button type="button" class="btn btn-primary" @click="$emit('edit')">수정하기</button>
+        <button type="button" class="btn btn-primary" @click="showEditModal(editIdx)">수정하기</button>
         <button type="button" class="btn btn-primary mx-3">삭제하기</button>
     </td>
     </tr>
@@ -14,25 +14,16 @@
 </template>
 
 <script>
+import * as MuType from '../../store/modules/mutation-types';
+import { useStore } from 'vuex';
 export default{
     name : 'MemberElement',
-    data (){
-        return {
-        };
+    setup(){
+        const store = useStore();
+        const showEditModal = (idx) => store.commit(MuType.SHOW_EDIT_MODAL, idx);  
+        return {showEditModal};
     },
-    props : {
-        member : {
-            type: Object,
-            default() {
-                return {
-                    id : -1,
-                    userId : "123478",
-                    name : "길동이1234",
-                    password: "123456",
-                };
-            }
-        },
-    }
+    props : ['member', 'editIdx']
 
 }
 </script>
