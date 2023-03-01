@@ -9,8 +9,6 @@ import lombok.Data;
 @Data
 public class UpdateProfessorDTO {
     @NotEmpty
-    private String userId;
-    @NotEmpty
     private String name;
     @NotEmpty
 

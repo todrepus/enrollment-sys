@@ -5,6 +5,7 @@ import com.todrepus.enrollmentsys.domain.course.CourseSchedule;
 import com.todrepus.enrollmentsys.domain.department.Department;
 import com.todrepus.enrollmentsys.domain.member.Professor;
 import com.todrepus.enrollmentsys.domain.room.Room;
+import com.todrepus.enrollmentsys.web.admin.department.DepartmentResponseDTO;
 import com.todrepus.enrollmentsys.web.admin.room.dto.RoomResponseDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ public class CourseResponseDTO {
     private String name;
     private RoomResponseDTO room;
     private List<CourseScheduleResponseDTO> courseScheduleList;
-    private Department department;
+    private DepartmentResponseDTO department;
     private Integer enrollNum;
     private Integer maxNum;
     private Long professorId;
@@ -33,7 +34,7 @@ public class CourseResponseDTO {
                     .map(CourseScheduleResponseDTO::new)
                     .toList();
         }
-        department = course.getDepartment();
+        department = new DepartmentResponseDTO(course.getDepartment());
         enrollNum = course.getEnrollNum();
         maxNum = course.getMaxNum();
 

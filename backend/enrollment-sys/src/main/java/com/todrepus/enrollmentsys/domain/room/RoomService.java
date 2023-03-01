@@ -1,8 +1,6 @@
 package com.todrepus.enrollmentsys.domain.room;
 
 import com.todrepus.enrollmentsys.domain.course.Course;
-import com.todrepus.enrollmentsys.domain.course.CourseRepository;
-import com.todrepus.enrollmentsys.domain.course.CourseSchedule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,5 +29,12 @@ public class RoomService {
         roomRepository.delete(room);
         room.getCourseList().clear();
         return room;
+    }
+
+    public List<Room> findRoomListStartWith(String words, int recommend_num){
+        return roomRepository.findAll().stream()
+                .filter((e -> e.getLocation().startsWith(words)))
+                .limit(recommend_num)
+                .toList();
     }
 }

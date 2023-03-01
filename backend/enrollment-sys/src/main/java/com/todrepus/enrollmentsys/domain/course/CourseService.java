@@ -3,7 +3,6 @@ package com.todrepus.enrollmentsys.domain.course;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnrollService;
 import com.todrepus.enrollmentsys.domain.member.MemberService;
 import com.todrepus.enrollmentsys.domain.member.Professor;
-import com.todrepus.enrollmentsys.web.admin.AdminPageConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,12 +18,11 @@ public class CourseService {
     private final MemberService memberService;
     private final CourseEnrollService courseEnrollService;
     private final CourseScheduleService courseScheduleService;
-    private final int RECOMMEND_NUM = 10;
 
-    public List<Course> findCoursesStartWith(String words){
+    public List<Course> findCourseListStartWith(String words, int recommend_num){
         return courseRepository.findAll().stream()
                 .filter((course -> course.getName().startsWith(words)))
-                .limit(RECOMMEND_NUM)
+                .limit(recommend_num)
                 .toList();
     }
 

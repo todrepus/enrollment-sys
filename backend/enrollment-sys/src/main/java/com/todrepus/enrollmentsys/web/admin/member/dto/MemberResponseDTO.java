@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 public class MemberResponseDTO {
+    private Long Id;
     private String userId;
     private String name;
     private String password;
@@ -20,6 +21,7 @@ public class MemberResponseDTO {
     private Role role;
 
     public MemberResponseDTO(Member member){
+        this.Id = member.getId();
         this.userId = member.getUserId();
         this.name = member.getName();
         this.password = member.getPassword();

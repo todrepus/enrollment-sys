@@ -2,6 +2,8 @@ package com.todrepus.enrollmentsys.web.admin.member;
 
 import com.todrepus.enrollmentsys.domain.course.Course;
 import com.todrepus.enrollmentsys.domain.course.CourseService;
+import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnroll;
+import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnrollRepository;
 import com.todrepus.enrollmentsys.domain.department.Department;
 import com.todrepus.enrollmentsys.domain.department.DepartmentService;
 import com.todrepus.enrollmentsys.domain.member.*;
@@ -12,13 +14,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+@CrossOrigin // CORS 허용
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -29,6 +33,7 @@ public class MemberRestController {
     private final MemberService memberService;
     private final CourseService courseService;
     private final DepartmentService departmentService;
+    private final CourseEnrollRepository courseEnrollRepository;
     @GetMapping("")
     public RestResponseDTO<List<MemberResponseDTO>> getMembers(@RequestParam(required = false) Integer page) {
         if (page == null || page <= 0)
@@ -115,8 +120,8 @@ public class MemberRestController {
         return responseDTO;
     }
 
-    @PostMapping("/students/{userId}/update")
-    public RestResponseDTO<StudentResponseDTO> updateStudent(@PathVariable String userId, @Validated @RequestBody UpdateStudentDTO updateStudentDTO,
+    @PostMapping("/students/{id}/update")
+    public RestResponseDTO<StudentResponseDTO> updateStudent(@PathVariable Long id, @Validated @RequestBody UpdateStudentDTO updateStudentDTO,
                                          BindingResult bindingResult, HttpServletResponse httpServletResponse){
         log.debug("{}", updateStudentDTO);
         if (bindingResult.hasErrors()){
@@ -124,20 +129,47 @@ public class MemberRestController {
             return RestResponseDTO.getBadRequestResponse("학생 업데이트 실패");
         }
 
-        Student student = memberService.findStudentByUserId(userId);
-
+        Student student = memberService.findStudentById(id);
         student.setName(updateStudentDTO.getName());
         student.setPassword(updateStudentDTO.getPassword());
         student.setPhoneNumber(updateStudentDTO.getPhoneNumber());
-        student.setSemester(updateStudentDTO.getSemeseter());
-        student.setState(updateStudentDTO.getState());
+
+        if (updateStudentDTO.getSemeseter() != null)
+            student.setSemester(updateStudentDTO.getSemeseter());
+        if (updateStudentDTO.getState() != null)
+            student.setState(updateStudentDTO.getState());
 
         Long departmentId = updateStudentDTO.getDepartmentId();
-        Department department = null;
         if (departmentId != null) {
-            department = departmentService.findDepartment(departmentId);
+            Department department = departmentService.findDepartment(departmentId);
+            student.setDepartment(department);
         }
-        student.setDepartment(department);
+
+        if (updateStudentDTO.getEnrollList() != null) {
+            Set<CourseEnroll> updated = new HashSet<>();
+            for (CourseEnrollUpdateDTO courseEnrollUpdateDTO : updateStudentDTO.getEnrollList()) {
+                boolean notFound = true;
+                for (CourseEnroll enroll : student.getCourseEnrollSet()) {
+                    if (enroll.getId() == courseEnrollUpdateDTO.getId()) {
+                        notFound = false;
+                        break;
+                    }
+                }
+                if (notFound)
+                    continue;
+
+                Course course = courseService.findCourse(courseEnrollUpdateDTO.getCourseId());
+                CourseEnroll courseEnroll = CourseEnroll.builder()
+                        .course(course)
+                        .student(student)
+                        .build();
+
+                courseEnroll.setId(courseEnrollUpdateDTO.getId()); // id가 존재하면, update됨. 아니면 새로 추가.
+                courseEnrollRepository.save(courseEnroll);
+                updated.add(courseEnroll);
+            }
+            student.setCourseEnrollSet(updated);
+        }
 
         RestResponseDTO<StudentResponseDTO> restResponseDTO =
                 RestResponseDTO.getSuccessResponse("학생 업데이트 성공");
@@ -146,8 +178,8 @@ public class MemberRestController {
         return restResponseDTO;
     }
 
-    @PostMapping("/professors/{userId}/update")
-    public RestResponseDTO<ProfessorResponseDTO> updateProfessor(@PathVariable String userId, @Validated @RequestBody UpdateProfessorDTO updateProfessorDTO,
+    @PostMapping("/professors/{id}/update")
+    public RestResponseDTO<ProfessorResponseDTO> updateProfessor(@PathVariable Long id, @Validated @RequestBody UpdateProfessorDTO updateProfessorDTO,
                                          BindingResult bindingResult, HttpServletResponse httpServletResponse){
         log.debug("{}", updateProfessorDTO);
         if (bindingResult.hasErrors()){
@@ -155,7 +187,7 @@ public class MemberRestController {
             return RestResponseDTO.getBadRequestResponse("교수 업데이트 실패");
         }
 
-        Professor professor = memberService.findProfessorByUserId(userId);
+        Professor professor = memberService.findProfessorById(id);
 
         professor.setName(updateProfessorDTO.getName());
         professor.setPassword(updateProfessorDTO.getPassword());

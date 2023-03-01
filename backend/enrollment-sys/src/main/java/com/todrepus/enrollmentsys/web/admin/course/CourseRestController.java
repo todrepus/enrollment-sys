@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@CrossOrigin // CORS 허용
 @Transactional
 @RequiredArgsConstructor
 @Slf4j

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin // CORS 허용
 @Transactional
 @Slf4j
 @RequiredArgsConstructor

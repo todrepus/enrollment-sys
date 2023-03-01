@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -55,6 +56,12 @@ public class MemberService {
     public Student findStudentByUserId(String userId){
         return studentRepository.findByUserId(userId).orElseThrow(
                 () -> new NoSuchElementException("해당 userId를 가진 student가 없습니다.")
+        );
+    }
+
+    public Student findStudentById(Long id){
+        return studentRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("해당 id를 가진 student가 없습니다.")
         );
     }
     public Professor deleteProfessor(String userId){
@@ -127,6 +134,13 @@ public class MemberService {
                 .build();
         courseEnrollRepository.save(courseEnroll);
         return true;
+    }
+
+    public List<Professor> findProfessorListStartWith(String words, int recommend_num){
+        return professorRepository.findAll().stream()
+                .filter((professor -> professor.getName().startsWith(words)))
+                .limit(recommend_num)
+                .toList();
     }
 
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -16,5 +17,12 @@ public class DepartmentService {
         return departmentRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("해당 id를 가진 department가 존재하지 않습니다.")
         );
+    }
+
+    public List<Department> findDepartmentListStartWith(String words, int recommend_num){
+        return departmentRepository.findAll().stream()
+                .filter((e -> e.getName().startsWith(words)))
+                .limit(recommend_num)
+                .toList();
     }
 }
