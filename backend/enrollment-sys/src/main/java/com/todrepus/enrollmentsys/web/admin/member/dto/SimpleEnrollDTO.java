@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class SimpleEnrollDTO {
     private Long id;
-    private CourseResponseDTO courseResponseDTO;
+    private CourseResponseDTO course;
 
     public SimpleEnrollDTO(Long id, Course course) {
         this.id = id;
-        this.courseResponseDTO = new CourseResponseDTO(course);
+        this.course = new CourseResponseDTO(course);
     }
 }

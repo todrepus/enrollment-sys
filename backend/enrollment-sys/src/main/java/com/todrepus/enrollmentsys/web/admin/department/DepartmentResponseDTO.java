@@ -11,7 +11,11 @@ public class DepartmentResponseDTO {
     private String name;
 
     public DepartmentResponseDTO(Department department){
+        if (department == null)
+            return;
         this.id = department.getId();
         this.name = department.getName();
+
     }
+
 }

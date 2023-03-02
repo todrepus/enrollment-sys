@@ -34,6 +34,8 @@ public class CourseScheduleDTO {
     }
 
     public CourseScheduleDTO(CourseSchedule schedule){
+        if (schedule == null)
+            return;
         this.id = schedule.getId();
         this.courseDay = schedule.getCourseDay();
         this.courseHourStart = schedule.getCourseHourStart();

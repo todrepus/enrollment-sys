@@ -48,7 +48,8 @@
 <script>
 import { ref } from 'vue';
 import {useStore} from "vuex";
-import * as MuType from "../../store/modules/mutation-types";
+import {NAMESPACE} from '@/pages/admin/store/modules/member';
+import * as actions from '@/pages/admin/store/modules/member/actions';
 export default{
   name : 'MemberModal',
   setup(){
@@ -61,12 +62,12 @@ export default{
       phoneNumber: "",
     });
 
-    let close = ()=>{store.commit(MuType.CLOSE_ADD_MODAL)};
+    let close = ()=>{store.dispatch(`${NAMESPACE}/${actions.CLOSE_ADD_MODAL}`)};
     // eslint-disable-next-line
     let validateMember = (member) => {return true;}
     let addMember = ()=>{
       console.assert(validateMember(member.value), "멤버검증실패");
-      store.dispatch(MuType.ADD_MEMBER,member.value);
+      store.dispatch(`${NAMESPACE}/${actions.ADD_MEMBER}`,member.value);
     }
     return {close, addMember, member};
   }

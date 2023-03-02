@@ -21,6 +21,8 @@ public class MemberResponseDTO {
     private Role role;
 
     public MemberResponseDTO(Member member){
+        if (member == null)
+            return;
         this.Id = member.getId();
         this.userId = member.getUserId();
         this.name = member.getName();

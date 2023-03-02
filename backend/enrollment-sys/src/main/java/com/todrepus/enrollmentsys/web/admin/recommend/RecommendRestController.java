@@ -31,42 +31,46 @@ public class RecommendRestController {
 
     private int RECOMMEND_NUM = 10;
 
-    @GetMapping("/recommend/professors")
+    @GetMapping("/professors")
     public RestResponseDTO<List<ProfessorResponseDTO>> recommendProfessorList(@RequestParam String content){
         List<ProfessorResponseDTO> professorResponseDTOList =  memberService.findProfessorListStartWith(content,RECOMMEND_NUM).stream()
                 .map(ProfessorResponseDTO::new)
                 .toList();
         RestResponseDTO<List<ProfessorResponseDTO>> responseDTO = RestResponseDTO.getSuccessResponse("교수 추천");
-        responseDTO.addParam("recommends", professorResponseDTOList);
+        responseDTO.setData(professorResponseDTOList);
+        log.debug("{}", professorResponseDTOList);
         return responseDTO;
     }
 
-    @GetMapping("/recommend/departments")
+    @GetMapping("/departments")
     public RestResponseDTO<List<DepartmentResponseDTO>> recommendDepartmentList(@RequestParam String content){
         List<DepartmentResponseDTO> departmentResponseDTOList =  departmentService.findDepartmentListStartWith(content,RECOMMEND_NUM).stream()
                 .map(DepartmentResponseDTO::new)
                 .toList();
         RestResponseDTO<List<DepartmentResponseDTO>> responseDTO = RestResponseDTO.getSuccessResponse("학과 추천");
-        responseDTO.addParam("recommends", departmentResponseDTOList);
+        responseDTO.setData(departmentResponseDTOList);
+        log.debug("{}", departmentResponseDTOList);
         return responseDTO;
     }
 
-    @GetMapping("/recommend/rooms")
+    @GetMapping("/rooms")
     public RestResponseDTO<List<RoomResponseDTO>> recommendRoomList(@RequestParam String content){
         List<RoomResponseDTO> roomResponseDTOList =  roomService.findRoomListStartWith(content,RECOMMEND_NUM).stream()
                 .map(RoomResponseDTO::new)
                 .toList();
         RestResponseDTO<List<RoomResponseDTO>> responseDTO = RestResponseDTO.getSuccessResponse("강의실 추천");
-        responseDTO.addParam("recommends", roomResponseDTOList);
+        responseDTO.setData(roomResponseDTOList);
+        log.debug("{}", roomResponseDTOList);
         return responseDTO;
     }
-    @GetMapping("/recommend/courses")
+    @GetMapping("/courses")
     public RestResponseDTO<List<CourseResponseDTO>> recommendCourseList(@RequestParam String content){
         List<CourseResponseDTO> courseResponseDTOList =  courseService.findCourseListStartWith(content,RECOMMEND_NUM).stream()
                 .map(CourseResponseDTO::new)
                 .toList();
         RestResponseDTO<List<CourseResponseDTO>> responseDTO = RestResponseDTO.getSuccessResponse("강의 추천");
-        responseDTO.addParam("recommends", courseResponseDTOList);
+        responseDTO.setData(courseResponseDTOList);
+        log.debug("{}", courseResponseDTOList);
         return responseDTO;
     }
 

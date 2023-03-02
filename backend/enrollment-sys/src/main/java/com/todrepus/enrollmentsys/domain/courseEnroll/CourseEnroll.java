@@ -5,6 +5,7 @@ import com.todrepus.enrollmentsys.domain.member.Student;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -27,8 +28,8 @@ public class CourseEnroll {
     private Course course;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="created_date")
-    private Date createdDate;
+    @Column(name="created_date", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createdDate;
 
     @Builder
     public CourseEnroll(Student student, Course course){

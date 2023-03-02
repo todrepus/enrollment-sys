@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class UpdateProfessorDTO {
     @NotEmpty
@@ -20,4 +22,5 @@ public class UpdateProfessorDTO {
     private Role role;
     private Integer year;
     private Long departmentId;
+    private Set<Long> courseIdSet;
 }

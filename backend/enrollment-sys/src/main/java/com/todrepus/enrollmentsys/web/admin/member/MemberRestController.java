@@ -1,6 +1,7 @@
 package com.todrepus.enrollmentsys.web.admin.member;
 
 import com.todrepus.enrollmentsys.domain.course.Course;
+import com.todrepus.enrollmentsys.domain.course.CourseSchedule;
 import com.todrepus.enrollmentsys.domain.course.CourseService;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnroll;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnrollRepository;
@@ -19,8 +20,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @CrossOrigin // CORS 허용
 @Slf4j
@@ -87,9 +90,9 @@ public class MemberRestController {
         }
     }
 
-    @GetMapping("/{userId}")
-    public RestResponseDTO<MemberResponseDTO> getMember(@PathVariable String userId){
-       Member foundMember = memberService.findMemberByUserId(userId);
+    @GetMapping("/{id}")
+    public RestResponseDTO<MemberResponseDTO> getMember(@PathVariable Long id){
+       Member foundMember = memberService.findMemberById(id);
 
         log.info("found : {}", foundMember);
         RestResponseDTO<MemberResponseDTO> responseDTO =
@@ -98,9 +101,9 @@ public class MemberRestController {
         return responseDTO;
     }
 
-    @GetMapping("/students/{userId}")
-    public RestResponseDTO<StudentResponseDTO> getStudent(@PathVariable String userId){
-        Student foundStudent = memberService.findStudentByUserId(userId);
+    @GetMapping("/students/{id}")
+    public RestResponseDTO<StudentResponseDTO> getStudent(@PathVariable Long id){
+        Student foundStudent = memberService.findStudentById(id);
 
         log.info("found : {}", foundStudent);
         RestResponseDTO<StudentResponseDTO> responseDTO =
@@ -109,9 +112,9 @@ public class MemberRestController {
         return responseDTO;
     }
 
-    @GetMapping("/professors/{userId}")
-    public RestResponseDTO<ProfessorResponseDTO> getProfessor(@PathVariable String userId){
-        Professor foundProfessor = memberService.findProfessorByUserId(userId);
+    @GetMapping("/professors/{id}")
+    public RestResponseDTO<ProfessorResponseDTO> getProfessor(@PathVariable Long id){
+        Professor foundProfessor = memberService.findProfessorById(id);
 
         log.info("found : {}", foundProfessor);
         RestResponseDTO<ProfessorResponseDTO> responseDTO =
@@ -146,35 +149,43 @@ public class MemberRestController {
         }
 
         if (updateStudentDTO.getEnrollList() != null) {
-            Set<CourseEnroll> updated = new HashSet<>();
-            for (CourseEnrollUpdateDTO courseEnrollUpdateDTO : updateStudentDTO.getEnrollList()) {
-                boolean notFound = true;
-                for (CourseEnroll enroll : student.getCourseEnrollSet()) {
-                    if (enroll.getId() == courseEnrollUpdateDTO.getId()) {
-                        notFound = false;
-                        break;
+            Set<CourseEnroll> updateCourseEnrollSet = updateStudentDTO.getEnrollList().stream().map(
+                    courseEnrollUpdateDTO -> {
+                        Course course = courseService.findCourse(courseEnrollUpdateDTO.getCourseId());
+                        CourseEnroll enroll = CourseEnroll.builder()
+                                .student(student)
+                                .course(course)
+                                .build();
+                        enroll.setId(courseEnrollUpdateDTO.getId());
+                        return enroll;
                     }
-                }
-                if (notFound)
-                    continue;
+            ).collect(Collectors.toSet());
 
-                Course course = courseService.findCourse(courseEnrollUpdateDTO.getCourseId());
-                CourseEnroll courseEnroll = CourseEnroll.builder()
-                        .course(course)
-                        .student(student)
-                        .build();
+            Set<Long> enrollIdSet = student.getCourseEnrollSet().stream()
+                    .map(CourseEnroll::getId)
+                    .collect(Collectors.toSet());
 
-                courseEnroll.setId(courseEnrollUpdateDTO.getId()); // id가 존재하면, update됨. 아니면 새로 추가.
+            Set<Long> updateIdSet = updateCourseEnrollSet.stream()
+                    .map(CourseEnroll::getId)
+                    .collect(Collectors.toSet());
+
+            // 차집합 연산으로, 제거대상 변경감지.
+            enrollIdSet.removeAll(updateIdSet);
+            enrollIdSet.forEach(courseEnrollRepository::deleteById);
+
+            // 나머지 수강신청 저장 및 업데이트
+            for (CourseEnroll courseEnroll : updateCourseEnrollSet) {
                 courseEnrollRepository.save(courseEnroll);
-                updated.add(courseEnroll);
             }
-            student.setCourseEnrollSet(updated);
+
+            student.setCourseEnrollSet(updateCourseEnrollSet);
         }
 
         RestResponseDTO<StudentResponseDTO> restResponseDTO =
                 RestResponseDTO.getSuccessResponse("학생 업데이트 성공");
         restResponseDTO.setData(new StudentResponseDTO(student));
 
+        log.debug("{}", restResponseDTO);
         return restResponseDTO;
     }
 
@@ -200,6 +211,27 @@ public class MemberRestController {
             department = departmentService.findDepartment(departmentId);
         }
         professor.setDepartment(department);
+
+        if (updateProfessorDTO.getCourseIdSet() != null) {
+            Set<Long> updateIdSet = updateProfessorDTO.getCourseIdSet();
+            Set<Course> courseSet = professor.getCourseSet();
+
+            Iterator<Course> iter = courseSet.iterator();
+            while (iter.hasNext()){
+                Course course = iter.next();
+                if (!updateIdSet.contains(course.getId())){
+                    course.setProfessor(null); // 교수-강의 연관관계 끊기
+                    iter.remove(); // iterator는 도중에 삭제해도 괜찮음.
+                }else{ // 만약에 id가 존재한다면, 업데이트 대상에서 지워버린다.
+                    updateIdSet.remove(course.getId());
+                }
+            }
+
+            for (Long courseId : updateIdSet) {
+                Course course = courseService.findCourse(courseId);
+                memberService.assignCourse(professor, course);
+            }
+        }
 
         RestResponseDTO<ProfessorResponseDTO> restResponseDTO =
                 RestResponseDTO.getSuccessResponse("교수 업데이트 성공");

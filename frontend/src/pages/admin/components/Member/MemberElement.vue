@@ -14,16 +14,24 @@
 </template>
 
 <script>
-import * as MuType from '../../store/modules/mutation-types';
 import { useStore } from 'vuex';
+import {NAMESPACE} from '@/pages/admin/store/modules/member';
+import * as actions from '@/pages/admin/store/modules/member/actions';
+import * as getters from '@/pages/admin/store/modules/member/getters';
 export default{
     name : 'MemberElement',
     setup(){
         const store = useStore();
-        const showEditModal = (idx) => store.commit(MuType.SHOW_EDIT_MODAL, idx);  
+        //const member = computed(() => store.getters.member(this.editIdx));
+        const showEditModal = (idx) => store.dispatch(`${NAMESPACE}/${actions.SHOW_EDIT_MODAL}`, idx);  
         return {showEditModal};
     },
-    props : ['member', 'editIdx']
+    props : ['editIdx'],
+    computed: {
+        member(){
+            return this.$store.getters[`${NAMESPACE}/${getters.MEMBER}`](this.editIdx);
+        }
+    },
 
 }
 </script>

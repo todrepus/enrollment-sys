@@ -35,6 +35,11 @@ public class MemberService {
         }
     }
 
+    public Member findMemberById(Long id){
+        return memberRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("해당 id를 가진 member가 없습니다.")
+        );
+    }
     public Member findMemberByUserId(String userId){
         return memberRepository.findByUserId(userId).orElseThrow(
                 () -> new NoSuchElementException("해당 userId를 가진 member가 없습니다.")

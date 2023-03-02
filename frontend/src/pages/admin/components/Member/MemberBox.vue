@@ -30,8 +30,8 @@
       </tr>
     </thead>
     <tbody>
-      <MemberElementVue :key="i" :member="data" :editIdx="i"
-        v-for="(data, i) in memberList"></MemberElementVue>
+      <MemberElementVue :key="i" :member="memberList[i]" :editIdx="i"
+        v-for="(_, i) in memberList"></MemberElementVue>
     </tbody>
   </table>
 
@@ -50,17 +50,20 @@ import MemberElementVue from './MemberElement.vue';
 import MemberModal from './MemberModal.vue';
 import MemberEditModal from './MemberEditModal.vue';
 import {useStore} from "vuex";
-import { computed } from 'vue';
-import * as MuType from '../../store/modules/mutation-types';
+import {computed } from 'vue';
+import {NAMESPACE} from '@/pages/admin/store/modules/member';
+import * as actions from '@/pages/admin/store/modules/member/actions';
+import * as getters from '@/pages/admin/store/modules/member/getters';
+
 
 export default {
   name: 'MemberBox',
   setup() {
     const store = useStore();
-    const memberList = computed(()=> store.getters.memberList);
-    const addModalVisible = computed(()=> store.getters.addModalVisible);
-    const editModalVisible = computed(()=> store.getters.editModalVisible);
-    const showAddModal = () => store.commit(MuType.SHOW_ADD_MODAL);
+    const memberList = computed(()=> store.getters[`${NAMESPACE}/${getters.MEMBER_LIST}`]);
+    const addModalVisible = computed(()=> store.state.member.view.addModalVisible);
+    const editModalVisible = computed(()=> store.state.member.view.editModalVisible);
+    const showAddModal = () => store.dispatch(`${NAMESPACE}/${actions.SHOW_ADD_MODAL}`);
 
     return { memberList, addModalVisible, editModalVisible, showAddModal};
   },
@@ -68,7 +71,8 @@ export default {
     MemberElementVue, MemberModal, MemberEditModal
   },
   beforeCreate() {
-    this.$store.dispatch(MuType.GET_MEMBERS, 1);
+    console.debug('beforeCreate');
+    this.$store.dispatch(`${NAMESPACE}/${actions.GET_MEMBERS_ON_PAGE}`,1);
   }
 }
 

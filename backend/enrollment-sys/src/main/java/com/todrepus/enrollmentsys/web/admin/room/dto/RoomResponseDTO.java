@@ -12,6 +12,8 @@ public class RoomResponseDTO {
     private String ho;
 
     public RoomResponseDTO(Room room){
+        if (room == null)
+            return;
         this.id = room.getId();
         this.location = room.getLocation();
         this.ho = room.getHo();

@@ -26,6 +26,8 @@ public class CourseResponseDTO {
     private String professorName;
 
     public CourseResponseDTO(Course course){
+        if (course == null )
+            return;
         courseId = course.getId();
         name = course.getName();
         room = new RoomResponseDTO(course.getRoom());

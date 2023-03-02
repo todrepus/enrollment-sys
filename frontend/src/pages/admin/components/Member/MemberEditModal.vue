@@ -17,6 +17,19 @@
                         <input readonly type="text" class="form-control" v-model="member.userId"
                             aria-describedby="helpId" placeholder="학번을 입력해주세요">
                     </div>
+
+                    <div class="mb-3" v-if="student">
+                        <label for="" class="form-label">학기</label>
+                        <input type="text" class="form-control" v-model="member.semester" aria-describedby="helpId"
+                            placeholder="학기를 입력해주세요">
+                    </div>
+
+                    <div class="mb-3" v-if="professor">
+                        <label for="" class="form-label">연차</label>
+                        <input type="text" class="form-control" v-model="member.year" aria-describedby="helpId"
+                            placeholder="연차를 입력해주세요">
+                    </div>
+
                     <div class="mb-3">
                         <label for="" class="form-label">이름</label>
                         <input type="text" class="form-control" v-model="member.name" aria-describedby="helpId"
@@ -27,11 +40,29 @@
                         <input type="text" class="form-control" v-model="member.password" aria-describedby="helpId"
                             placeholder="비밀번호를 입력해주세요">
                     </div>
+
                     <div class="mb-3">
+                        <label for="" class="form-label">연락처</label>
+                        <input type="text" class="form-control" v-model="member.phoneNumber" aria-describedby="helpId"
+                            placeholder="연락처를 입력해주세요">
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="" class="form-label">학과</label>
+                        <SearchBoxVue what="departments"
+                            :old-selected="member.department"
+                            @update="newValue => member.department = newValue"
+                            ></SearchBoxVue>
+                    </div>
+
+                    <div class="mb-3" v-if="student || professor">
                         <label for="" class="form-label">강의리스트</label>
-                        <SearchBoxVue :key="i" :recommendGET="recommendGET" v-model="member.courseList[i]"
-                            :old-selected="course" v-for="(course, i) in member.courseList"></SearchBoxVue>
-                        <button type="button" class="btn btn-primary mx-3" @click="member.courseList.push({name : '', content : ''})">
+                        <SearchBoxVue :key="i" what="courses"
+                            :old-selected="course" v-for="(course, i) in member.courseSet"
+                            @update="newValue => member.courseSet[i] = newValue"
+                            ></SearchBoxVue>
+                        <button type="button" class="btn btn-primary mx-3" @click="member.courseSet.push({})">
                             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor"
                                 class="bi bi-plus" viewBox="0 0 16 16">
                                 <path
@@ -39,6 +70,8 @@
                             </svg>
                         </button>
                     </div>
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" @click="edit">수정하기</button>
@@ -51,36 +84,23 @@
 
 <script>
 import SearchBoxVue from '../SearchBox/SearchBox.vue';
-import * as MuType from '../../store/modules/mutation-types';
 import { useStore } from 'vuex';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import {NAMESPACE} from '@/pages/admin/store/modules/member';
+import * as actions from '@/pages/admin/store/modules/member/actions';
+import * as getters from '@/pages/admin/store/modules/member/getters';
 export default {
     name: 'MemberEditModal',
     components: { SearchBoxVue },
     setup() {
         const store = useStore();
-        let member = ref(Object.assign("{}", store.getters.editMember));
-        const edit = () => store.dispatch(MuType.EDIT_MEMBER, member);
-        const close  = () => store.commit(MuType.CLOSE_EDIT_MODAL);
-
-        return {member, edit, close};
-    },
-    methods: {
-        recommendGET(words) {
-            return fetch(`/api/admin/recommend/courses?content=${words}`, {
-                method: 'GET',
-            }).then(
-                (response) => response.json()
-            ).then(
-                (data) => {
-                    console.log(data)
-                    return data.context.courseList.map(course => () => {
-                        return { name: course.name, content: course }
-                    });
-                }
-            )
-
-        }
+        let member = ref(Object.assign({}, store.getters[`${NAMESPACE}/${getters.EDIT_MEMBER}`]));
+        console.debug(member.value);
+        const edit = () => store.dispatch(`${NAMESPACE}/${actions.UPDATE_MEMBER}`, member.value);
+        const close  = () => store.dispatch(`${NAMESPACE}/${actions.CLOSE_EDIT_MODAL}`);
+        const student = computed(()=>member.value.role == "학생");
+        const professor = computed(()=>member.value.role == "교수");
+        return {member, edit, close, student, professor};
     },
 }
 </script>
