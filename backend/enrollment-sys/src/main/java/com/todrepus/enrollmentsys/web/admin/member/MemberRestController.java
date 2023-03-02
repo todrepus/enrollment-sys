@@ -1,7 +1,6 @@
 package com.todrepus.enrollmentsys.web.admin.member;
 
 import com.todrepus.enrollmentsys.domain.course.Course;
-import com.todrepus.enrollmentsys.domain.course.CourseSchedule;
 import com.todrepus.enrollmentsys.domain.course.CourseService;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnroll;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnrollRepository;
@@ -19,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -240,18 +238,44 @@ public class MemberRestController {
         return restResponseDTO;
     }
 
-    @PostMapping("/students/{userId}/delete")
-    public RestResponseDTO<StudentResponseDTO> deleteStudent(@PathVariable String userId){
-        Student student = memberService.deleteStudent(userId);
+    @PostMapping("/{id}/delete")
+    public RestResponseDTO<MemberResponseDTO> deleteMember(@PathVariable Long id, HttpServletResponse httpServletResponse) {
+        Member member = memberService.findMemberById(id);
+        if (member.getRole() == Role.STUDENT || member.getRole() == Role.PROFESSOR){
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return RestResponseDTO.getBadRequestResponse("요청된 id를 가진 회원의 유형이 잘못되었습니다.");
+        }
+        member = memberService.deleteMemberById(id);
+        RestResponseDTO<MemberResponseDTO> responseDTO =
+                RestResponseDTO.getSuccessResponse("회원 삭제에 성공");
+        responseDTO.setData(new MemberResponseDTO(member));
+        return responseDTO;
+    }
+
+    @PostMapping("/students/{id}/delete")
+    public RestResponseDTO<StudentResponseDTO> deleteStudent(@PathVariable Long id, HttpServletResponse httpServletResponse){
+        Student student = memberService.findStudentById(id);
+        if (student.getRole() != Role.STUDENT){
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return RestResponseDTO.getBadRequestResponse("요청된 id를 가진 학생의 유형이 잘못되었습니다.");
+        }
+        student = memberService.deleteStudentById(id);
+
         RestResponseDTO<StudentResponseDTO> responseDTO =
                 RestResponseDTO.getSuccessResponse("학생 삭제에 성공");
         responseDTO.setData(new StudentResponseDTO(student));
         return responseDTO;
     }
 
-    @PostMapping("/professors/{userId}/delete")
-    public RestResponseDTO<ProfessorResponseDTO> deleteProfessor(@PathVariable String userId){
-        Professor professor = memberService.deleteProfessor(userId);
+    @PostMapping("/professors/{id}/delete")
+    public RestResponseDTO<ProfessorResponseDTO> deleteProfessor(@PathVariable Long id, HttpServletResponse httpServletResponse){
+        Professor professor = memberService.findProfessorById(id);
+        if (professor.getRole() != Role.PROFESSOR){
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return RestResponseDTO.getBadRequestResponse("요청된 id를 가진 교수의 유형이 잘못되었습니다.");
+        }
+        professor = memberService.deleteProfessorById(id);
+
         RestResponseDTO<ProfessorResponseDTO> responseDTO =
                 RestResponseDTO.getSuccessResponse("교수 삭제에 성공");
         responseDTO.setData(new ProfessorResponseDTO(professor));

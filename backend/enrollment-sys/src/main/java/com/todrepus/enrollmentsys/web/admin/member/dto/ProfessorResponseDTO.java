@@ -23,6 +23,7 @@ public class ProfessorResponseDTO extends MemberResponseDTO{
             return;
         department = new DepartmentResponseDTO(professor.getDepartment());
         year = professor.getYear();
+
         courseSet = professor.getCourseSet().stream()
                 .map(CourseResponseDTO::new).collect(Collectors.toSet());
     }

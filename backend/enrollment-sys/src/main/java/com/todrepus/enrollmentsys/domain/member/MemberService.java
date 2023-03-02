@@ -69,19 +69,24 @@ public class MemberService {
                 () -> new NoSuchElementException("해당 id를 가진 student가 없습니다.")
         );
     }
-    public Professor deleteProfessor(String userId){
-        Professor professor = findProfessorByUserId(userId);
+    public Professor deleteProfessorById(Long id){
+        Professor professor = findProfessorById(id);
         // 교수에게 배정된 강의 관계 해제
         for (Course course : professor.getCourseSet()){
             cancelCourseAssign(professor, course);
         }
         professorRepository.delete(professor);
-        professor.setCourseSet(null);
+        //professor.setCourseSet(null);
         return professor;
     }
 
-    public Student deleteStudent(String userId){
-        Student student = findStudentByUserId(userId);
+    public Member deleteMemberById(Long id){
+        Member member = findMemberById(id);
+        memberRepository.delete(member);
+        return member;
+    }
+    public Student deleteStudentById(Long id){
+        Student student = findStudentById(id);
         for (CourseEnroll courseEnroll : student.getCourseEnrollSet()){
             cancelCourseEnroll(student, courseEnroll);
         }

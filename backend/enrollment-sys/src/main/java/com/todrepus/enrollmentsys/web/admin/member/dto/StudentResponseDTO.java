@@ -25,6 +25,7 @@ public class StudentResponseDTO extends MemberResponseDTO {
         semester = student.getSemester();
         state = student.getState();
         department = new DepartmentResponseDTO(student.getDepartment());
+
         courseSet = student.getCourseEnrollSet().stream().map(
                 courseEnroll -> new SimpleEnrollDTO(courseEnroll.getId(), courseEnroll.getCourse())
         ).collect(Collectors.toSet());

@@ -6,7 +6,7 @@
     <td>{{ member.name }}</td>
     <td class="d-flex justify-content-end mr-5">
         <button type="button" class="btn btn-primary" @click="showEditModal(editIdx)">수정하기</button>
-        <button type="button" class="btn btn-primary mx-3">삭제하기</button>
+        <button type="button" class="btn btn-primary mx-3" @click="deleteMember">삭제하기</button>
     </td>
     </tr>
     
@@ -18,6 +18,7 @@ import { useStore } from 'vuex';
 import {NAMESPACE} from '@/pages/admin/store/modules/member';
 import * as actions from '@/pages/admin/store/modules/member/actions';
 import * as getters from '@/pages/admin/store/modules/member/getters';
+
 export default{
     name : 'MemberElement',
     setup(){
@@ -32,6 +33,11 @@ export default{
             return this.$store.getters[`${NAMESPACE}/${getters.MEMBER}`](this.editIdx);
         }
     },
+    methods: {
+        deleteMember(){
+            this.$store.dispatch(`${NAMESPACE}/${actions.DELETE_MEMBER}`,this.member);
+        }
+    }
 
 }
 </script>

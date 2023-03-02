@@ -48,7 +48,7 @@
                     </div>
 
 
-                    <div class="mb-3">
+                    <div class="mb-3" v-if="student || professor">
                         <label for="" class="form-label">학과</label>
                         <SearchBoxVue what="departments"
                             :old-selected="member.department"
