@@ -21,6 +21,16 @@ module.exports = defineConfig({
         entry:'src/pages/admin/main.js',
         template:'public/admin.html',
         filename:'admin.html'
+    },
+    login: {
+      entry:'src/pages/login/main.js',
+      template:'public/login.html',
+      filename:'login.html'
+    },
+    mypage: {
+      entry:'src/pages/mypage/main.js',
+      template:'public/mypage.html',
+      filename:'mypage.html'
     }
   }
 })

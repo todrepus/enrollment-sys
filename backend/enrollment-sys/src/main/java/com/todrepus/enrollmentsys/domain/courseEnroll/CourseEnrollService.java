@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,5 +19,11 @@ public class CourseEnrollService {
         courseEnrollList.forEach(courseEnrollRepository::delete);
 
         return courseEnrollList;
+    }
+
+    public CourseEnroll findCourseEnrollById(Long enrollId){
+        return courseEnrollRepository.findById(enrollId).orElseThrow(
+                () -> new NoSuchElementException("해당 id를 가진 enroll이 존재하지 않습니다.")
+        );
     }
 }

@@ -5,6 +5,8 @@ import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnroll;
 import com.todrepus.enrollmentsys.domain.courseEnroll.CourseEnrollRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -151,6 +153,20 @@ public class MemberService {
                 .filter((professor -> professor.getName().startsWith(words)))
                 .limit(recommend_num)
                 .toList();
+    }
+
+    public Member login(String userId, String password){
+        Member member = findMemberByUserId(userId);
+        if (member.getPassword().equals(password)){
+            return member;
+        }else{
+            return null;
+        }
+    }
+
+    public Page<Member> findMembersOnPage(int page, int size){
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return memberRepository.findAll(pageRequest);
     }
 
 }

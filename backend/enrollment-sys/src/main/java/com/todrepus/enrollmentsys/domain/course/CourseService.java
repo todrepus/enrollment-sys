@@ -5,6 +5,8 @@ import com.todrepus.enrollmentsys.domain.member.MemberService;
 import com.todrepus.enrollmentsys.domain.member.Professor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,5 +49,9 @@ public class CourseService {
         courseRepository.delete(course);
 
         return course;
+    }
+
+    public Page<Course> findCoursesOnPage(int page, int size){
+        return courseRepository.findAll(PageRequest.of(page,size));
     }
 }

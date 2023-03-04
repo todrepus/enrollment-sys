@@ -1,7 +1,7 @@
 <template>
     <!-- Hover added -->
     <div class="d-flex justify-content-end m-4">
-      <button type="button" class="btn btn-primary mx-3" @click="setAddModalVisible(true)"> 강의추가
+      <button type="button" class="btn btn-primary mx-3" @click="showAddModal"> 강의추가
         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-plus"
           viewBox="0 0 16 16">
           <path
@@ -15,7 +15,6 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">강의코드</th>
           <th scope="col">강의명</th>
           <th scope="col">학과</th>
           <th scope="col">교수명</th>
@@ -25,16 +24,17 @@
         </tr>
       </thead>
       <tbody>
-        <CourseElementVue :key="i" :course="data" :idx="i" :visible="setEditModalVisible" :editInit="editInit"
-         v-for="(data, i) in elements"></CourseElementVue>
+        <CourseElementVue :key="i" :course="data" :idx="i"
+         v-for="(data, i) in courseList"></CourseElementVue>
       </tbody>
     </table>
 
     <!-- 강의 추가 모달-->
-    <CourseAddModalVue :visible="setAddModalVisible" :addCourse="addCourse" v-if="addModalVisible"></CourseAddModalVue>
+    <CourseAddModalVue v-if="addModalVisible"></CourseAddModalVue>
     <!-- /////////////-->
     <!-- 강의 편집 모달-->
-    <CourseEditModalVue :visible="setEditModalVisible" :editCourse="editCourse" :oldCourse=nowEditCourse v-if="editModalVisible"></CourseEditModalVue>
+    <CourseEditModalVue
+      v-if="editModalVisible"></CourseEditModalVue>
     <!-- /////////////-->
   
   </template>
@@ -43,54 +43,30 @@
     import CourseElementVue from './CourseElement.vue';
     import CourseAddModalVue from './CourseAddModal.vue';
     import CourseEditModalVue from './CourseEditModal.vue';
+    import { useStore } from 'vuex';
+    import {NAMESPACE} from '@/pages/admin/store/modules/course';
+    import * as actions from '@/pages/admin/store/modules/course/actions';
+import { computed } from 'vue';
 
   export default {
     name: 'CourseBox',
-    props: {
-      msg: String
-    },
     components: {
         CourseElementVue, CourseAddModalVue, CourseEditModalVue
     },
-    methods: {
-        setAddModalVisible(state) {
-            this.addModalVisible = state;
-        },
-        setEditModalVisible(state) {
-            this.editModalVisible = state;
-        },
-        addCourse(course){
-            //// fetch api addCourse ///
-            ///////////////
+    setup(){
+      console.debug('setup')
+      const store = useStore();
+      const showAddModal = () => {store.dispatch(`${NAMESPACE}/${actions.SHOW_ADD_MODAL}`)};
+      const courseList = computed(() => store.state.course.data.courses);
+      const addModalVisible = computed(()=>store.state.course.view.addModalVisible);
+      const editModalVisible = computed(()=>store.state.course.view.editModalVisible);
 
-            //// if success ////
-            this.addModalVisible = false;
-            this.elements.push(course);
-            ////////////////////
-        },
-        editCourse(course){
-            //// fetch api editCourse ///
-            ///////////////
-            //// if success ////
-            this.editModalVisible = false;
-            this.elements[course.idx] = course;
-            ////////////////////
-        },
-        editInit(key){
-            this.nowEditCourse = this.elements[key];
-            this.nowEditCourse.idx = key;
-        }
+      return {showAddModal, courseList, addModalVisible, editModalVisible};
     },
-    data() {
-      return {
-        elements : [{id:0, code : '001', name:'전자회로2', profName:'김준엽', roomName:'충무관103호',  
-        department: '전자정보통신공학',
-        dates:[{date:'월', start:'15:00', end:'17:00', visible:false}, {date:'수', start:'17:00', end:'19:00', visible:false}],} ],
-        addModalVisible : false,
-        editModalVisible : false,
-        nowEditCourse : {}
-      };
-    },
+    beforeCreate(){
+      this.$store.dispatch(`${NAMESPACE}/${actions.GET_COURSES_ON_PAGE}`, 0)
+
+    }
   }
   </script>
     

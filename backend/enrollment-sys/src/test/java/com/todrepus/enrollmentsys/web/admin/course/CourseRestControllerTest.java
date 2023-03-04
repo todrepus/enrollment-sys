@@ -10,34 +10,25 @@ import com.todrepus.enrollmentsys.domain.department.DepartmentService;
 import com.todrepus.enrollmentsys.domain.member.Member;
 import com.todrepus.enrollmentsys.domain.member.Professor;
 import com.todrepus.enrollmentsys.domain.member.ProfessorRepository;
-import com.todrepus.enrollmentsys.domain.member.Role;
 import com.todrepus.enrollmentsys.domain.room.Room;
 import com.todrepus.enrollmentsys.domain.room.RoomRepository;
 import com.todrepus.enrollmentsys.domain.room.RoomService;
 import com.todrepus.enrollmentsys.web.RestResponseDTO;
-import com.todrepus.enrollmentsys.web.admin.course.dto.*;
-import jakarta.persistence.EntityManager;
+import com.todrepus.enrollmentsys.web.course.dto.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -124,7 +115,7 @@ class CourseRestControllerTest {
                         .courseMinEnd(30).build()
         );
 
-        courseDTO.setCourseScheduleDTOList(courseScheduleList);
+        courseDTO.setScheduleList(courseScheduleList);
 
         String requestJson = objectMapper.writeValueAsString(courseDTO);
         MvcResult result = mvc.perform(post("/api/admin/courses/add")
@@ -152,12 +143,12 @@ class CourseRestControllerTest {
 
         for (int i=0; i<2; i++){
             CourseScheduleDTO dto = courseScheduleList.get(i);
-            CourseScheduleResponseDTO actualDto = courseResponseDTO.getCourseScheduleList().get(i);
-            assertEquals(dto.getCourseDay(), actualDto.getCourseDay());
-            assertEquals(dto.getCourseHourStart(), actualDto.getCourseHourStart());
-            assertEquals(dto.getCourseMinStart(), actualDto.getCourseMinStart());
-            assertEquals(dto.getCourseHourEnd(), actualDto.getCourseHourEnd());
-            assertEquals(dto.getCourseMinEnd(), actualDto.getCourseMinEnd());
+            CourseScheduleResponseDTO actualDto = courseResponseDTO.getScheduleList().get(i);
+            assertEquals(dto.getDay(), actualDto.getDay());
+            assertEquals(dto.getStartHour(), actualDto.getStartHour());
+            assertEquals(dto.getStartMin(), actualDto.getStartMin());
+            assertEquals(dto.getEndHour(), actualDto.getEndHour());
+            assertEquals(dto.getEndMin(), actualDto.getEndMin());
         }
 
     }
@@ -225,7 +216,7 @@ class CourseRestControllerTest {
         updateCourseDTO.setDepartmentId(department.getId());
         updateCourseDTO.setProfessorId(professor.getId());
         updateCourseDTO.setMaxNum(updateMaxNum);
-        updateCourseDTO.setCourseScheduleDTOList(
+        updateCourseDTO.setScheduleList(
                 course.getCourseScheduleList().stream()
                         .map(CourseScheduleDTO::new)
                         .collect(Collectors.toList())
@@ -248,8 +239,8 @@ class CourseRestControllerTest {
         );
 
         // 첫번째 강의스케줄은 삭제.
-        updateCourseDTO.getCourseScheduleDTOList().remove(0);
-        updateCourseDTO.getCourseScheduleDTOList().addAll(updateCourseScheduleList);
+        updateCourseDTO.getScheduleList().remove(0);
+        updateCourseDTO.getScheduleList().addAll(updateCourseScheduleList);
 
         String postUrl = "/api/admin/courses/" + course.getId() + "/update";
         String requestJson = objectMapper.writeValueAsString(updateCourseDTO);
@@ -267,22 +258,22 @@ class CourseRestControllerTest {
         assertEquals(professor.getName(), foundCourse.getProfessor().getName());
         assertEquals(professor.getId(), foundCourse.getProfessor().getId());
         assertEquals(updateMaxNum, foundCourse.getMaxNum());
-        assertEquals(updateCourseDTO.getCourseScheduleDTOList().size(),
+        assertEquals(updateCourseDTO.getScheduleList().size(),
                 foundCourse.getCourseScheduleList().size());
 
-        for (int i=0; i<updateCourseDTO.getCourseScheduleDTOList().size(); ++i){
-            CourseScheduleDTO expectDTO = updateCourseDTO.getCourseScheduleDTOList().get(i);
+        for (int i = 0; i<updateCourseDTO.getScheduleList().size(); ++i){
+            CourseScheduleDTO expectDTO = updateCourseDTO.getScheduleList().get(i);
             CourseSchedule actual = foundCourse.getCourseScheduleList().get(i);
 
-            assertEquals(expectDTO.getCourseHourStart(), actual.getCourseHourStart());
-            assertEquals(expectDTO.getCourseMinStart(), actual.getCourseMinStart());
-            assertEquals(expectDTO.getCourseHourEnd(), actual.getCourseHourEnd());
-            assertEquals(expectDTO.getCourseMinEnd(), actual.getCourseMinEnd());
-            assertEquals(expectDTO.getCourseDay(), actual.getCourseDay());
+            assertEquals(expectDTO.getStartHour(), actual.getCourseHourStart());
+            assertEquals(expectDTO.getStartMin(), actual.getCourseMinStart());
+            assertEquals(expectDTO.getEndHour(), actual.getCourseHourEnd());
+            assertEquals(expectDTO.getEndMin(), actual.getCourseMinEnd());
+            assertEquals(expectDTO.getDay(), actual.getCourseDay());
         }
 
 
-        assertEquals(updateCourseDTO.getCourseScheduleDTOList().size(),
+        assertEquals(updateCourseDTO.getScheduleList().size(),
                 courseScheduleRepository.findByCourseId(course.getId()).size());
     }
 }

@@ -60,7 +60,7 @@ export default {
   name: 'MemberBox',
   setup() {
     const store = useStore();
-    const memberList = computed(()=> store.getters[`${NAMESPACE}/${getters.MEMBER_LIST}`]);
+    let memberList = computed(()=> store.getters[`${NAMESPACE}/${getters.MEMBER_LIST}`]);
     const addModalVisible = computed(()=> store.state.member.view.addModalVisible);
     const editModalVisible = computed(()=> store.state.member.view.editModalVisible);
     const showAddModal = () => store.dispatch(`${NAMESPACE}/${actions.SHOW_ADD_MODAL}`);
@@ -72,7 +72,7 @@ export default {
   },
   beforeCreate() {
     console.debug('beforeCreate');
-    this.$store.dispatch(`${NAMESPACE}/${actions.GET_MEMBERS_ON_PAGE}`,1);
+    this.$store.dispatch(`${NAMESPACE}/${actions.GET_MEMBERS_ON_PAGE}`,0);
   }
 }
 

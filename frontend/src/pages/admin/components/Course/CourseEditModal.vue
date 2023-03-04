@@ -4,62 +4,72 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addCourseModalLabel">강의 수정</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="visible(false)"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        @click="close"></button>
                 </div>
                 <div class="modal-body">
-
-                    <div class="mb-3" style="text-align:start">
-                        <label for="userId" class="form-label">강의코드</label>
-                        <input readonly type="text" class="form-control" v-model="course.code"  aria-describedby="helpId"
-                            placeholder="">
+                    <div class="mb-3">
+                        <label for="" class="form-label">id</label>
+                        <input disabled type="text" class="form-control" v-model="course.courseId" aria-describedby="helpId">
                     </div>
+
                     <div class="mb-3" style="text-align:start">
                         <label for="userId" class="form-label">강의명</label>
                         <input type="text" class="form-control" v-model="course.name" aria-describedby="helpId"
                             placeholder="강의명을 입력해주세요.">
-                        <!-- Hover added -->
-                        <div class="list-group mx-1 mt-1" id='courselist' v-if="codeListView">
-                            <button type="button" class="list-group-item list-group-item-action"
-                                aria-current="true">Active item</button>
-                            <button type="button" class="list-group-item list-group-item-action">Item</button>
-                            <button type="button" class="list-group-item list-group-item-action" disabled>Disabled
-                                item</button>
-                        </div>
+                    </div>
+                    <div class="mb-3" style="text-align:start">
+                        <label for="" class="form-label">수강정원</label>
+                        <input type="text" class="form-control" v-model="course.maxNum" aria-describedby="helpId"
+                            placeholder="최대 수강인원을 입력해주세요.">
                     </div>
 
-                    <div class="mb-3" style="text-align:start">
-                        <label for="userId" class="form-label">학과명</label>
-                        <input type="text" class="form-control" v-model="course.department"  aria-describedby="helpId"
-                            placeholder="학과명을 입력해주세요">
+
+                    <div class="mb-3">
+                        <label for="" class="form-label">학과</label>
+                        <SearchBoxVue what="departments" :old-selected="course.department"
+                            @update="newValue => course.department = newValue"></SearchBoxVue>
                     </div>
 
-                    <div class="mb-3" style="text-align:start">
-                        <label for="name" class="form-label">교수</label>
-                        <input hidden type="text" v-model="course.profId">
-                        <input type="text" class="form-control" v-model="course.profName" aria-describedby="helpId"
-                            placeholder="강의 교수명을 입력해주세요.">
+                    <div class="mb-3">
+                        <label for="" class="form-label">교수</label>
+                        <SearchBoxVue what="professors" :old-selected="course.professor"
+                            @update="newValue => course.professor = newValue"></SearchBoxVue>
                     </div>
 
-                    <div class="mb-3" style="text-align:start">
-                        <label for="name" class="form-label">강의실</label>
-                        <input hidden type="text" v-model="course.roomId">
-                        <input type="text" class="form-control" v-model="course.roomName" aria-describedby="helpId"
-                            placeholder="강의실을 입력해주세요.">
+                    <div class="mb-3">
+                        <label for="" class="form-label">강의실</label>
+                        <SearchBoxVue what="rooms" :old-selected="course.room" @update="newValue => course.room = newValue">
+                        </SearchBoxVue>
                     </div>
 
                     <div class="mb-3" style="text-align:start">
                         <label for="name" class="form-label">강의시간</label>
-                        <div :key="i" v-for="(dateElement, i) in course.dates" class="d-flex justify-content-around mb-3">
+                        <div :key="i" v-for="(schedule, i) in course.scheduleList"
+                            class="d-flex justify-content-around mb-3">
                             <div>
-                                <input readonly v-model="course.dates[i].date" class="form-control" @click="course.dates[i].visible = ~course.dates[i].visible">
-                                <ul v-if="dateElement.visible">
-                                    <li :key="j" :class="{'dropdown-item' : true, 'active' : data === dateElement.date}"
-                                     v-for="(data, j) in ['월', '화', '수', '목', '금', '토', '일']" @click="course.dates[i].date = data; course.dates[i].visible=false;">{{ data }}</li>
+                                <input readonly v-model="course.scheduleList[i].day" class="form-control"
+                                    @click="visibleList[i] = ~visibleList[i]">
+                                <ul v-if="visibleList[i]">
+                                    <li :key="j" :class="{ 'dropdown-item': true, 'active': data === schedule.day }"
+                                        v-for="(data, j) in ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']"
+                                        @click="course.scheduleList[i].day = data; visibleList[i] = false;">{{ data }}</li>
                                 </ul>
                             </div>
-                            <input :class="{'form-control' : true, 'is-invalid' : timeValid(course.dates[i].start) == false}" v-model="course.dates[i].start">
-                            <input :class="{'form-control' : true, 'is-invalid' : timeValid(course.dates[i].end) == false}" v-model="course.dates[i].end">
-                            <button class="btn btn-primary" @click="course.dates.splice(i, 1)">-</button>
+                            <input
+                                :class="{ 'form-control': true, 'is-invalid': timeValid(`${schedule.startHour}:${schedule.startMin}`) == false }"
+                                v-model="course.scheduleList[i].startHour">
+                            <input
+                                :class="{ 'form-control': true, 'is-invalid': timeValid(`${schedule.startHour}:${schedule.startMin}`) == false }"
+                                v-model="course.scheduleList[i].startMin">
+                            <input
+                                :class="{ 'form-control': true, 'is-invalid': timeValid(`${schedule.endHour}:${schedule.endMin}`) == false }"
+                                v-model="course.scheduleList[i].endHour">
+                            <input
+                                :class="{ 'form-control': true, 'is-invalid': timeValid(`${schedule.endHour}:${schedule.endMin}`) == false }"
+                                v-model="course.scheduleList[i].endMin">
+                            <button class="btn btn-primary"
+                                @click="course.scheduleList.splice(i, 1); visibleList.splice(i, 1)">-</button>
                         </div>
                         <button class="btn btn-primary" @click="addEmptyDate">
                             +
@@ -68,7 +78,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="editCourse(course)">수정하기</button>
+                    <button type="button" class="btn btn-primary" @click="updateCourse(course)">수정하기</button>
+                    <button @click="showCourse">show course</button>
                 </div>
             </div>
         </div>
@@ -76,67 +87,36 @@
 </template>
 
 <script>
+import SearchBoxVue from '../SearchBox/SearchBox.vue';
+import { useStore } from 'vuex';
+import { NAMESPACE } from '@/pages/admin/store/modules/course';
+import * as actions from '@/pages/admin/store/modules/course/actions';
+import * as getters from '@/pages/admin/store/modules/course/getters';
+import {timeValidFunction} from './time';
+import { computed, ref} from 'vue';
+
 export default {
     name: 'CourseEditModal',
-    data() {
-        return {
-            course: {
-                code : '', name : '', profName : '', profId:'', roomName : '', roomId:'', department: '',
-                    dates:[{date:'월', start:'15:00', end:'17:00', visible:false}, {date:'수', start:'17:00', end:'19:00', visible:false}],
-                    codeListView : false, idx:0
-            }
-        }
+    components : {SearchBoxVue},
+    setup() {
+        
+        const store = useStore();
+        let course = ref(Object.assign({}, store.getters[`${NAMESPACE}/${getters.EDIT_COURSE}`]));
+        console.debug(course.value);
+        const updateCourse = (course) => store.dispatch(`${NAMESPACE}/${actions.UPDATE_COURSE}`, course);
+        const visibleList = computed(() => store.state.course.edit.visibleList);
+        const close = () => store.dispatch(`${NAMESPACE}/${actions.CLOSE_EDIT_MODAL}`);
+        const timeValid = timeValidFunction;
+        const showCourse = () => {console.debug(course.value);}
+
+        return { course, updateCourse, close, visibleList, timeValid, showCourse};
     },
     methods: {
-        timeValid(timeInput){
-            let result = timeInput.match('(\\d{2}):(\\d{2})');
-            if (result == null){
-                return false;
-            }
-            if (timeInput !== result[0]){
-                return false;
-            }
-            const hour = result[1] * 1;
-            const min = result[2] * 1;
-
-            if (hour < 0 || hour > 24){
-                return false;
-            }
-
-            if (min < 0 || min > 60){
-                return false;
-            }
-
-            return true;
-        },
         addEmptyDate(){
-            this.course.dates.push({date:'월', start:'', end:'', visible:false})
+            this.course.scheduleList.push({day:'MON', startHour : 0, endHour : 0, startMin : 0, endMin : 0})
+            this.visibleList.push(false);
         }
     },
-    props: {
-        visible: Function,
-        editCourse: Function,
-        oldCourse: {
-            type: Object,
-            default() {
-                return {
-                    code : '', name : '', profName : '', profId:'', roomName : '', roomId:'', department: '',
-                    dates:[{date:'월', start:'15:00', end:'17:00', visible:false}, {date:'수', start:'17:00', end:'19:00', visible:false}],
-                    codeListView : false, 
-                    idx:0
-                }
-            }
-        }
-    },
-    mounted() {
-        Object.assign(this.course, this.oldCourse);
-
-        this.course.dates = [];
-        this.oldCourse.dates.forEach(date => {
-            let newDate = Object.assign({}, date);
-            this.course.dates.push(newDate);
-        });
-    }
 }
 </script>
 

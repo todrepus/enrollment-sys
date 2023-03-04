@@ -1,15 +1,14 @@
 package com.todrepus.enrollmentsys.web.admin.recommend;
 
-import com.todrepus.enrollmentsys.domain.course.Course;
 import com.todrepus.enrollmentsys.domain.course.CourseService;
 import com.todrepus.enrollmentsys.domain.department.DepartmentService;
 import com.todrepus.enrollmentsys.domain.member.MemberService;
 import com.todrepus.enrollmentsys.domain.room.RoomService;
 import com.todrepus.enrollmentsys.web.RestResponseDTO;
-import com.todrepus.enrollmentsys.web.admin.course.dto.CourseResponseDTO;
-import com.todrepus.enrollmentsys.web.admin.department.DepartmentResponseDTO;
-import com.todrepus.enrollmentsys.web.admin.member.dto.ProfessorResponseDTO;
-import com.todrepus.enrollmentsys.web.admin.room.dto.RoomResponseDTO;
+import com.todrepus.enrollmentsys.web.course.dto.CourseResponseDTO;
+import com.todrepus.enrollmentsys.web.department.dto.DepartmentResponseDTO;
+import com.todrepus.enrollmentsys.web.member.dto.ProfessorResponseDTO;
+import com.todrepus.enrollmentsys.web.room.dto.RoomResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
